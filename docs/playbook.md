@@ -4,6 +4,31 @@ The order below is deliberate: each step produces a working, testable state,
 and the legacy build comes first because it is the spec the Bazel build must
 match (docs/principles.md).
 
+## 0. Scout outside Bazel first (cheap iteration)
+
+Before writing any BUILD file, prove the upstream build works on this host
+in a Bazel-like environment, and harvest the facts the Bazel build needs:
+
+```sh
+cp -r <repo>/upstream /tmp/trial && cd /tmp/trial
+env -i PATH=/usr/bin:/bin HOME=/tmp make <upstream args>   # scrubbed env ≈ sandbox
+```
+
+- If this fails, fix the invocation (or the wrapper) here, not through slow
+  genrule iterations.
+- Capture the build's verbose output (`make V=1`, `cargo build -v`, ...).
+  The **link commands are the ground truth** for the Bazel-native build:
+  transcribe the object list into a generated `srcs.bzl` (see
+  redis/srcs.bzl) and the exact compile/link flags into the BUILD file,
+  rather than guessing from docs. Per-dependency libraries keep their own
+  upstream flags.
+- Note every generated file (version headers, command tables): pre-generated
+  files shipped in the release tarball can be consumed as sources; build-time
+  generated ones need a genrule that runs the unmodified upstream generator
+  deterministically (pin `SOURCE_DATE_EPOCH`, see ADR 0004).
+- Trial-run the upstream test suite the same way and time it; pick the
+  subset/tags story before wiring it into Bazel.
+
 ## 1. Vendor the upstream source
 
 - Pick a pinned release (a tag, not a moving branch). Download the tarball,
@@ -63,5 +88,6 @@ match (docs/principles.md).
 
 ## Definition of done
 
-`bazel test //<repo>:all` passes offline on a clean checkout
-(`bazel clean --expunge` first), and the README table row is honest.
+`bazel clean --expunge && bazel test //...` passes offline on this host
+(not just `//<repo>:all` — your change must not break the others), and the
+README table row is honest about coverage and gaps.
