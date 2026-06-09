@@ -1,0 +1,11 @@
+# Vendored external deps: build/test/run must work with no network access.
+# Downloads are disabled by default to enforce this. To refresh vendored deps
+# (the only step that needs network):
+#   bazel vendor --repository_disable_download=false //...
+common --vendor_dir=vendor
+common --repository_disable_download
+
+# Reproducibility: don't leak the user's environment into actions.
+build --incompatible_strict_action_env
+
+test --test_output=errors

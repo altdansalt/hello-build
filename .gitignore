@@ -1,0 +1,5 @@
+# Bazel output symlinks.
+/bazel-*
+
+# Machine-local convenience symlink created by `bazel vendor`.
+/vendor/bazel-external

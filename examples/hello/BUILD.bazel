@@ -1,0 +1,75 @@
+# The canonical example of this repo's pattern, applied to a toy upstream
+# project (examples/hello/upstream: a Makefile-built C program with a shell
+# test suite). Every onboarded repo exposes these seven targets:
+#
+#   bazel build //examples/hello:legacy_build   # unmodified upstream build, run by Bazel
+#   bazel run   //examples/hello:legacy_binary
+#   bazel test  //examples/hello:legacy_test    # upstream suite vs legacy binary
+#   bazel build //examples/hello:bazel_build    # Bazel-native build of the same sources
+#   bazel run   //examples/hello:bazel_binary
+#   bazel test  //examples/hello:bazel_test     # same upstream suite vs Bazel binary
+#   bazel test  //examples/hello:parity_test    # legacy and bazel binaries behave identically
+
+load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+load("//tools:make.bzl", "legacy_make")
+load("//tools:parity.bzl", "parity_test")
+
+# --- Legacy build: the upstream Makefile, unmodified, inside a Bazel action ---
+
+legacy_make(
+    name = "legacy_build",
+    srcs = glob(["upstream/**"]),
+    make_dir = "upstream",
+    out_binaries = ["hello"],
+)
+
+alias(
+    name = "legacy_binary",
+    actual = ":legacy_build_hello",
+)
+
+sh_test(
+    name = "legacy_test",
+    size = "small",
+    srcs = ["upstream/tests/run_tests.sh"],
+    data = [":legacy_binary"],
+    env = {"HELLO_BIN": "$(rootpath :legacy_binary)"},
+)
+
+# --- Bazel-native build of the same sources ---
+
+cc_binary(
+    name = "bazel_binary",
+    srcs = ["upstream/src/hello.c"],
+    # Mirror the Makefile's CFLAGS (-O2 -Wall); -Wall via features would also work.
+    copts = [
+        "-O2",
+        "-Wall",
+    ],
+)
+
+alias(
+    name = "bazel_build",
+    actual = ":bazel_binary",
+)
+
+sh_test(
+    name = "bazel_test",
+    size = "small",
+    srcs = ["upstream/tests/run_tests.sh"],
+    data = [":bazel_binary"],
+    env = {"HELLO_BIN": "$(rootpath :bazel_binary)"},
+)
+
+# --- Parity: same suite, same behavior, byte-for-byte ---
+
+parity_test(
+    name = "parity_test",
+    size = "small",
+    bazel_binary = ":bazel_binary",
+    cases = "parity_cases.txt",
+    legacy_binary = ":legacy_binary",
+    suite = "upstream/tests/run_tests.sh",
+    suite_bin_env = "HELLO_BIN",
+)

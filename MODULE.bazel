@@ -1,0 +1,13 @@
+"""hello-build: tools and examples for adding Bazel build+test targets to non-Bazel repos.
+
+Every dependency declared here must be vendored (see docs/decisions/0002-offline.md)
+so that build/test/run work with no external network access.
+"""
+
+module(
+    name = "hello_build",
+    version = "0.1.0",
+)
+
+bazel_dep(name = "rules_cc", version = "0.2.17")
+bazel_dep(name = "rules_shell", version = "0.6.1")

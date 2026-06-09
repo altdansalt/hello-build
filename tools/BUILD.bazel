@@ -1,0 +1,1 @@
+# Shared Starlark tooling lives here; runtime scripts live in subpackages.
