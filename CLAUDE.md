@@ -16,13 +16,16 @@ The repo documents itself: read these before changing anything.
 
 ## Hard rules
 
-- **No network during build/test/run.** `.bazelrc` disables downloads; if a
-  build needs something, vendor it (sources under `<repo>/upstream/` with an
-  `UPSTREAM` file; Bazel module deps via `MODULE.bazel` +
-  `sh tools/refresh_vendor.sh`, the only network-allowed step).
-- **Never edit files under `<repo>/upstream/` or `vendor/` by hand.**
-  Upstream patches, if truly unavoidable, go in `<repo>/patches/`, applied
-  visibly at build time, with parity implications documented.
+- **No network inside actions** (ADR 0006). Sandboxes get a private
+  network namespace (own loopback only) — legacy builds that download and
+  tests that need outside networking fail loudly, by design. Bazel's fetch
+  phase may download: upstream sources are sha256-pinned `http_archive`s in
+  MODULE.bazel (`@<repo>_src`, BUILD file injected from
+  `<repo>/<repo>.BUILD.bazel`), recorded in `<repo>/UPSTREAM`; rulesets are
+  ordinary `bazel_dep`s pinned by MODULE.bazel.lock.
+- **Never modify upstream sources.** Patches, if truly unavoidable, go in
+  `<repo>/patches/`, applied visibly at build time, with parity
+  implications documented.
 - **Definition of done** for any onboarding or tooling change:
   `bazel clean --expunge && bazel test //...` passes on this host, and the
   root README table row honestly states coverage and gaps.
@@ -41,12 +44,8 @@ The repo documents itself: read these before changing anything.
   pids/paths/timestamps. See the header of redis/tests/functional.sh.
 - Unix sockets created under `$TEST_TMPDIR` exceed the 108-char `sun_path`
   limit; create them under `mktemp -d` instead (sandbox-private /tmp).
-- Upstream suites that bind/probe real TCP ports race concurrent runs of
-  themselves: `tags = ["exclusive"]`.
 - Suites needing host tools beyond cc/make/POSIX-sh: `tags =
   ["requires-<tool>"]`, fail with an actionable message, document the
   `--test_tag_filters` escape hatch (ADR 0005).
-- `bazel vendor //...` over-fetches ~95MB of unused toolchain repos; the
-  prune list lives in `tools/refresh_vendor.sh`, which also re-verifies the
-  offline build. If you add a ruleset dep, run that script, never `bazel
-  vendor` directly.
+- Tests may bind any port they like on the sandbox-private loopback;
+  don't add `exclusive` tags or port-coordination machinery for that.

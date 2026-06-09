@@ -47,20 +47,23 @@ is the entire point — but it must consume the same vendored sources.
   nondeterminism, but it uses the host `make`/`cc` by definition.
 - Host requirements are capped at: Bazel (pinned), a C/C++ toolchain,
   `make`, and a POSIX shell. Anything else a repo needs (interpreters,
-  code generators) must be vendored and built from source, or the targets
+  code generators) must be fetched pinned and built from source, or the targets
   that need it are tagged and documented as requiring extra host tools.
 
-## No network during build/test/run
+## No network inside actions
 
-Everything needed is committed: vendored Bazel module deps (`vendor/`),
-vendored upstream sources (`<repo>/upstream/`), and the lockfile.
-`.bazelrc` sets `--repository_disable_download` so violations fail loudly.
-Loopback networking inside tests (e.g. a server under test) is fine.
+Build and test actions run in private network namespaces
+(`--sandbox_default_allow_network=false`): the legacy build cannot download,
+tests cannot reach the outside world, and each action's private loopback is
+free for servers under test (no cross-test port collisions, ever). Bazel's
+fetch phase may download — module deps and upstream archives — pinned by
+`MODULE.bazel.lock` and sha256 (ADR 0006). Vendoring is allowed where it
+earns its keep, never required.
 
 ## Document as you go
 
 Goals, principles, and decisions live in this repo, not in anyone's head.
 Non-obvious choices get a numbered entry in `docs/decisions/`. Each
-onboarded repo gets a README recording: upstream version vendored, how the
+onboarded repo gets a README recording: the pinned upstream version, how the
 legacy build is invoked, what the Bazel build covers, what parity evidence
 exists, and known gaps.

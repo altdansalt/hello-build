@@ -1,7 +1,8 @@
 """hello-build: tools and examples for adding Bazel build+test targets to non-Bazel repos.
 
-Every dependency declared here must be vendored (see docs/decisions/0002-offline.md)
-so that build/test/run work with no external network access.
+Fetching happens only in Bazel's fetch phase, pinned by MODULE.bazel.lock and
+per-archive sha256s; build and test actions themselves run without network
+access (see docs/decisions/0006-hermetic-actions-pinned-fetches.md).
 """
 
 module(
@@ -11,3 +12,15 @@ module(
 
 bazel_dep(name = "rules_cc", version = "0.2.17")
 bazel_dep(name = "rules_shell", version = "0.6.1")
+
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+# Upstream sources of onboarded repos. Each entry is mirrored by a
+# <repo>/UPSTREAM file recording version/url/sha256/license rationale.
+http_archive(
+    name = "redis_src",
+    build_file = "//redis:redis.BUILD.bazel",
+    sha256 = "72c081e3b8cfae7144273d26d76736f08319000af46c01515cad5d29765cead5",
+    strip_prefix = "redis-7.2.7",
+    urls = ["https://download.redis.io/releases/redis-7.2.7.tar.gz"],
+)

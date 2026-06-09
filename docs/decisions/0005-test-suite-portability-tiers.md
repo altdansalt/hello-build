@@ -26,8 +26,9 @@ the headline claim of this repo, so it gets the portable suite, not the
 tagged one.
 
 Practical notes from redis:
-- Suites that probe/bind real TCP ports race concurrent test runs of
-  themselves → tag the upstream-suite targets `exclusive`.
+- Suites that probe/bind real TCP ports could race concurrent runs — but
+  since ADR 0006, every action has a private network namespace (own
+  loopback), so this cannot happen and no `exclusive` tag is needed.
 - Unix sockets created under `$TEST_TMPDIR` can exceed the 108-byte
   `sun_path` limit inside Bazel sandboxes → create them under `mktemp -d`
   (the sandbox's private /tmp) instead.

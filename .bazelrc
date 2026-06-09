@@ -1,9 +1,9 @@
-# Vendored external deps: build/test/run must work with no network access.
-# Downloads are disabled by default to enforce this. To refresh vendored deps
-# (the only step that needs network):
-#   bazel vendor --repository_disable_download=false //...
-common --vendor_dir=vendor
-common --repository_disable_download
+# Actions are hermetic: no network inside build or test actions. Fetching
+# external dependencies (module registry, http_archives, toolchains) happens
+# in Bazel's fetch phase, pinned by MODULE.bazel.lock and per-archive sha256s.
+# Sandboxes get a private network namespace (with their own loopback), so the
+# legacy builds can't phone home and tests can't collide on host ports.
+build --sandbox_default_allow_network=false
 
 # Reproducibility: don't leak the user's environment into actions.
 build --incompatible_strict_action_env

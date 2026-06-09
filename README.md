@@ -30,15 +30,16 @@ the stable public interface.
 - **Bazel for everything.** Any host with Bazel (version pinned in
   [.bazelversion](.bazelversion)) plus a C toolchain, `make`, and a POSIX
   shell can build, test, and run every target.
-- **No network during build/test/run.** External Bazel deps are vendored in
-  [vendor/](vendor/) and downloads are disabled in [.bazelrc](.bazelrc);
-  upstream sources are vendored per repo. The only step that touches the
-  network is `tools/refresh_vendor.sh`.
+- **No network inside actions** (ADR 0006). Builds and tests run in network
+  namespaces with only a private loopback (`.bazelrc`), so legacy builds
+  can't download and tests can't touch the outside world. Bazel's *fetch
+  phase* may download — module deps and upstream source archives — pinned by
+  `MODULE.bazel.lock` and per-archive sha256s.
 
 ## Quick start
 
 ```sh
-bazel test //...                                # everything, fully offline
+bazel test //...                                # everything (first run fetches pinned deps)
 bazel test //examples/hello:parity_test        # the canonical example
 bazel run  //examples/hello:legacy_binary -- you
 bazel run  //examples/hello:bazel_binary  -- you
@@ -48,10 +49,11 @@ bazel run  //examples/hello:bazel_binary  -- you
 
 ```
 docs/               goals, principles, decision log, onboarding playbook
-tools/              shared Starlark + scripts (legacy_make, parity_test, vendoring)
+tools/              shared Starlark + scripts (legacy_make, parity_test)
 examples/hello/     toy upstream repo demonstrating the full pattern
-vendor/             vendored external Bazel deps (committed; refresh via tools/refresh_vendor.sh)
-<repo>/             one top-level package per onboarded real repo
+<repo>/             one top-level package per onboarded real repo; upstream
+                    sources fetched as @<repo>_src (MODULE.bazel, sha256-pinned,
+                    BUILD file injected from <repo>/<repo>.BUILD.bazel)
 ```
 
 ## Onboarded repos

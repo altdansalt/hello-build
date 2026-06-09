@@ -11,8 +11,9 @@ build is *demonstrably* functionally equivalent to the original build.
    onboarded end-to-end under the seven-target interface (ADR 0001).
 3. **Evidence**: `parity_test` targets whose passing actually means
    something — see docs/principles.md for what counts.
-4. **Self-containedness**: any host with the pinned Bazel + cc + make + sh
-   can run everything, offline (ADR 0002, 0003).
+4. **Hermetic actions**: any host with the pinned Bazel + cc + make + sh
+   can run everything; actions never touch the network, fetches are pinned
+   (ADR 0006).
 5. **A written record**: this repo documents its own goals, principles,
    decisions, and per-repo findings as they happen.
 
@@ -23,8 +24,9 @@ From the project brief, roughly easiest-first within each build system:
 - **make/C**: redis (self-contained deps — first real target),
   the_silver_searcher (autotools + system libs), tmux (libevent/ncurses),
   JuliaLang/julia (huge)
-- **cargo/Rust**: ripgrep (first cargo target — needs rules_rust + vendored
-  crates), uv, ruff, deno, zed, bun, rust-lang/rust
+- **cargo/Rust**: ripgrep (first cargo target — rules_rust + crate fetching
+  are fine under ADR 0006, all pinned by lockfile), uv, ruff, deno, zed,
+  bun, rust-lang/rust
 - **cmake**: neovim, llvm-project, ClickHouse
 - **go**: shelley, grafana, prometheus, kubernetes, moby
 - **zig**: ziglang/zig, ghostty

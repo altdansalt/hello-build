@@ -1,6 +1,11 @@
 # ADR 0003: Vendor upstream sources into this repo
 
-**Status:** accepted (2026-06-09)
+**Status:** amended by [ADR 0006](0006-hermetic-actions-pinned-fetches.md) (2026-06-09)
+
+> Amendment: the default is now an `http_archive` in MODULE.bazel pinned by
+> sha256, with our BUILD file injected (e.g. redis). Committing the tree
+> into `<repo>/upstream/` stays an option where it earns its keep (toy
+> examples, heavy patching). `UPSTREAM` files are required either way.
 
 Each onboarded repo's sources are committed under `<repo>/upstream/`,
 imported from a pinned upstream release (tag + tarball, recorded in the

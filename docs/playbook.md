@@ -10,8 +10,9 @@ Before writing any BUILD file, prove the upstream build works on this host
 in a Bazel-like environment, and harvest the facts the Bazel build needs:
 
 ```sh
-cp -r <repo>/upstream /tmp/trial && cd /tmp/trial
-env -i PATH=/usr/bin:/bin HOME=/tmp make <upstream args>   # scrubbed env ≈ sandbox
+curl -LO <release tarball> && tar xzf ... -C /tmp/trial   # same artifact you'll pin
+cd /tmp/trial
+env -i PATH=/usr/bin:/bin HOME=/tmp make <upstream args>  # scrubbed env ≈ sandbox
 ```
 
 - If this fails, fix the invocation (or the wrapper) here, not through slow
@@ -29,12 +30,18 @@ env -i PATH=/usr/bin:/bin HOME=/tmp make <upstream args>   # scrubbed env ≈ sa
 - Trial-run the upstream test suite the same way and time it; pick the
   subset/tags story before wiring it into Bazel.
 
-## 1. Vendor the upstream source
+## 1. Pin the upstream source
 
-- Pick a pinned release (a tag, not a moving branch). Download the tarball,
-  record project/version/URL/date/sha256 in `<repo>/UPSTREAM`, extract into
-  `<repo>/upstream/`. Commit unmodified.
+- Pick a pinned release (a tag, not a moving branch). Add an `http_archive`
+  to MODULE.bazel (`@<repo>_src`) with sha256 and
+  `build_file = "//<repo>:<repo>.BUILD.bazel"`; record
+  project/version/URL/date/sha256/license rationale in `<repo>/UPSTREAM`.
 - Top-level package named after the project: `//redis`, `//ripgrep`, ...
+  The injected BUILD file defines the Bazel-native build and the filegroups
+  (`:tree`, exported scripts) the legacy build and suites consume; the
+  package's BUILD.bazel holds the seven-target interface and tests.
+- For step 0's scratch tree: `bazel fetch @<repo>_src` then look under
+  `$(bazel info output_base)/external/`.
 
 ## 2. Make the legacy build run under Bazel (`legacy_build`)
 
@@ -43,8 +50,9 @@ env -i PATH=/usr/bin:/bin HOME=/tmp make <upstream args>   # scrubbed env ≈ sa
   `tools/` (keep wrappers generic, repo-specifics in the repo's BUILD file).
 - The wrapper copies sources to a writable scratch dir, runs the real build
   with a scrubbed environment, extracts declared outputs.
-- Expect sandbox friction: builds that write to `$HOME`, probe the network,
-  or shell out to tools we don't allow. Fix the wrapper or vendor the tool;
+- Expect sandbox friction: builds that write to `$HOME`, shell out to tools
+  we don't allow, or try to download (actions have no network — such builds
+  fail loudly; that's the point). Fix the wrapper or pin/fetch the input;
   never patch upstream silently (ADR 0003).
 - Add `legacy_binary` (runnable) targets for the main artifacts.
 
@@ -63,7 +71,8 @@ env -i PATH=/usr/bin:/bin HOME=/tmp make <upstream args>   # scrubbed env ≈ sa
 - Mirror the legacy build's compiler flags, defines, and feature config —
   divergence here is the #1 source of parity failures. Extract them from the
   legacy build's verbose output (`make V=1`) rather than guessing.
-- Vendor any new rulesets via `MODULE.bazel` + `tools/refresh_vendor.sh`.
+- New rulesets are ordinary `bazel_dep`s in `MODULE.bazel` (the lockfile
+  pins them; actions still run without network).
 - Finer-grained internal targets encouraged; the public names are aliases.
 
 ## 5. Same suite against the Bazel binary (`bazel_test`)
@@ -88,6 +97,6 @@ env -i PATH=/usr/bin:/bin HOME=/tmp make <upstream args>   # scrubbed env ≈ sa
 
 ## Definition of done
 
-`bazel clean --expunge && bazel test //...` passes offline on this host
-(not just `//<repo>:all` — your change must not break the others), and the
-README table row is honest about coverage and gaps.
+`bazel clean --expunge && bazel test //...` passes on this host (not just
+`//<repo>:all` — your change must not break the others), and the README
+table row is honest about coverage and gaps.

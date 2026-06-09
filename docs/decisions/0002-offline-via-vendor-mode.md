@@ -1,6 +1,10 @@
 # ADR 0002: Offline builds via bzlmod vendor mode
 
-**Status:** accepted (2026-06-09)
+**Status:** superseded by [ADR 0006](0006-hermetic-actions-pinned-fetches.md) (2026-06-09)
+
+> Kept for the record: the constraint this implemented ("no network ever,
+> commit everything") was stricter than intended. Actions are still
+> network-free; fetching is now allowed and pinned.
 
 **Constraint:** no external network access during build/test/run; any host
 with Bazel can build everything.

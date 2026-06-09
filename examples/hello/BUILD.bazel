@@ -20,7 +20,7 @@ load("//tools:parity.bzl", "parity_test")
 legacy_make(
     name = "legacy_build",
     srcs = glob(["upstream/**"]),
-    make_dir = "upstream",
+    makefile = "upstream/Makefile",
     out_binaries = ["hello"],
 )
 
