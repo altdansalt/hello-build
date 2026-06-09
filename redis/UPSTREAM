@@ -1,0 +1,8 @@
+project: redis
+version: 7.2.7
+source: https://download.redis.io/releases/redis-7.2.7.tar.gz
+sha256: 72c081e3b8cfae7144273d26d76736f08319000af46c01515cad5d29765cead5
+retrieved: 2026-06-09
+license: BSD-3-Clause (7.2.x is the last fully BSD-licensed release line)
+extraction: tar xzf redis-7.2.7.tar.gz --strip-components=1 into upstream/
+exclusions: none (full release tree committed unmodified)

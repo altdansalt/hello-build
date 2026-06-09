@@ -20,6 +20,8 @@ def legacy_make(
         out_files = [],
         targets = [],
         make_args = [],
+        env = {},
+        jobs = "auto",
         visibility = None):
     """Builds an upstream make project.
 
@@ -29,10 +31,17 @@ def legacy_make(
       make_dir: package-relative directory containing the Makefile.
       out_binaries: make_dir-relative paths of built executables to extract.
           Each <path> also gets an executable target <name>_<basename> usable
-          with `bazel run`.
+          with `bazel run`; all of them land in a single directory
+          (<package>/<name>_bin/) so suites can locate sibling tools with
+          `$(dirname $BIN)/<basename>`.
       out_files: additional non-executable outputs to extract.
       targets: make targets to invoke (default: the default target).
       make_args: extra arguments/variables for make, e.g. ["V=1", "CC=cc"].
+      env: environment variables for the make invocation (the sandbox is
+          otherwise scrubbed). Use for upstream-supported knobs only, e.g.
+          SOURCE_DATE_EPOCH; configuring the build belongs in make_args.
+      jobs: "auto" (use the machine's cores), an int as string, or "" to
+          let make default to serial.
       visibility: standard visibility.
     """
     outs = list(out_binaries) + list(out_files)
@@ -47,6 +56,13 @@ def legacy_make(
         for out in outs
     ])
 
+    if jobs == "auto":
+        jobs_flag = '"-j$$(nproc)"'
+    elif jobs:
+        jobs_flag = "-j" + jobs
+    else:
+        jobs_flag = ""
+
     native.genrule(
         name = name,
         srcs = srcs,
@@ -56,7 +72,7 @@ set -e
 builddir=$$(mktemp -d)
 cp -rL "{make_dir}/." "$$builddir/"
 chmod -R u+w "$$builddir"
-if ! make -C "$$builddir" {make_args} {targets} > "$$builddir/.legacy_make.log" 2>&1; then
+if ! {env} make -C "$$builddir" {jobs} {make_args} {targets} > "$$builddir/.legacy_make.log" 2>&1; then
     echo "--- legacy make build failed; log follows ---" >&2
     cat "$$builddir/.legacy_make.log" >&2
     exit 1
@@ -64,6 +80,8 @@ fi
 {copy_out}
 """.format(
             make_dir = "%s/%s" % (native.package_name(), make_dir) if native.package_name() else make_dir,
+            env = " ".join(["env"] + ["'%s=%s'" % (k, v) for k, v in env.items()]) if env else "",
+            jobs = jobs_flag,
             make_args = " ".join(["'%s'" % a for a in make_args]),
             targets = " ".join(targets),
             copy_out = copy_out,
@@ -72,13 +90,15 @@ fi
         visibility = visibility,
     )
 
-    # An executable wrapper per built binary, so `bazel run` works.
+    # An executable copy per built binary, so `bazel run` works. All copies
+    # share the <name>_bin/ directory, preserving upstream basenames, so a
+    # suite given one binary can find its siblings.
     for bin_path in out_binaries:
         basename = bin_path.rsplit("/", 1)[-1]
         native.genrule(
             name = "%s_%s" % (name, basename),
             srcs = ["%s/%s" % (name, bin_path)],
-            outs = ["%s_%s_bin" % (name, basename)],
+            outs = ["%s_bin/%s" % (name, basename)],
             cmd = "cp $< $@",
             executable = True,
             visibility = visibility,

@@ -1,0 +1,9 @@
+# Invocations of redis-server that must produce byte-identical
+# stdout/stderr/exit codes on the legacy and Bazel builds. Version metadata
+# matches exactly because both builds pin SOURCE_DATE_EPOCH=0 (the build id
+# hash is computed from it); no normalization involved.
+
+--version
+-v
+--help
+-h

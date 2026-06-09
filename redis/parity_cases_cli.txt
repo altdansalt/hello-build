@@ -1,0 +1,8 @@
+# Invocations of redis-cli that must produce byte-identical
+# stdout/stderr/exit codes on the legacy and Bazel builds. Connection-needing
+# invocations don't belong here: they'd depend on (or even mutate!) whatever
+# redis happens to listen on the host's 6379.
+
+--version
+-v
+--help

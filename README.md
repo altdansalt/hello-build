@@ -59,5 +59,6 @@ vendor/             vendored external Bazel deps (committed; refresh via tools/r
 | Repo | Legacy build | Status |
 |---|---|---|
 | [examples/hello](examples/hello) | make | ✅ all seven targets green |
+| [redis](redis) (7.2.7) | make | ✅ all seven + functional/cli variants; tcl suite tagged `requires-tclsh`; benchmark/sentinel/modules not in Bazel build yet |
 
 To add one, follow [docs/playbook.md](docs/playbook.md).
