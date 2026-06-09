@@ -41,3 +41,16 @@ its output). After fetching, everything builds and tests offline.
 use standard rulesets and registries (the "vendor the rust toolchain?"
 blocker is gone); fetched-source BUILD files live in the main repo and are
 injected, so they stay greppable and reviewable.
+
+**History note (2026-06-09):** after this pivot, `vendor/` and
+`redis/upstream/` were purged from *all* git history (filter-branch), not
+just removed at HEAD — `.git` went from 15MB to ~220KB and every commit hash
+changed. Two consequences for anyone doing archaeology:
+
+- Pre-pivot commit messages still describe vendoring ("vendor/ committed",
+  the redis upstream tree); that's the truthful record of what those commits
+  did at the time, even though the purged snapshots no longer contain the
+  trees.
+- Pre-pivot commits no longer build if checked out: their BUILD files
+  reference the purged paths. Only HEAD is expected to build, and the
+  definition of done (CLAUDE.md) keeps it that way.
