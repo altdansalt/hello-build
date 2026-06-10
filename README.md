@@ -104,3 +104,4 @@ plus tooling (ADR 0019). Each links its own public test invocation:
 | [fleet-jq](https://github.com/altdansalt/fleet-jq) | jq 1.8.1 | autotools/C + vendored deps | [6/6 tests](https://app.buildbuddy.io/invocation/4c9d0d1b-58f7-4452-b2b8-7852d4cc394b) |
 | [fleet-gnu-grep](https://github.com/altdansalt/fleet-gnu-grep) | GNU grep 3.12 | autotools/C | [6/6 tests](https://app.buildbuddy.io/invocation/b9ee131e-3512-4897-aaf2-861b13a2feeb) |
 | [fleet-fd](https://github.com/altdansalt/fleet-fd) | fd 10.4.2 | cargo/Rust (40+ crates) | [5/5 tests](https://app.buildbuddy.io/invocation/4da01ac8-c82a-46bf-be10-677790dc3804) |
+| [fleet-gnu-diffutils](https://github.com/altdansalt/fleet-gnu-diffutils) | GNU diffutils 3.12 | autotools/C, 4 binaries | [6/6 tests](https://app.buildbuddy.io/invocation/b4168921-c309-4c74-bf41-6f0350f15859) |
