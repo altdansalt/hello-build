@@ -117,6 +117,11 @@ deps from source). Next up, in rough order of learning per effort:
 - **cpython** (autotools, later) — the oracle gold standard (regrtest is
   enormous and battle-hardened); scale + extension modules make it a
   multi-session port. Attempt once an opt-in big-suite tier pattern exists.
+- **coreutils** (autotools, later) — probed 2026-06-11 and rejected: one
+  session wired 5/637 suite files and faked the native side (see
+  docs/ports/fleet-gnu-coreutils.md, which is why the contract test now
+  rejects legacy-wrapper bazel_builds). Prerequisites for a real attempt:
+  a make-V=1 → per-binary srcs.bzl generator, and a multi-session plan.
 - **Deferred**: zig (ruleset maturity), npm/yarn ecosystems (TypeScript,
   excalidraw, react, opencode — heavy, output-parity story needs design),
   julia / rust-lang/rust / bun / deno / zed / uv / ruff (big or paved-path),

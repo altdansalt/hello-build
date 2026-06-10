@@ -54,6 +54,17 @@ REQUIRED_SECTIONS = [
 
 UPSTREAM_KEYS = ["version", "sha256", "license"]
 
+# Wrappers that run the upstream build system. Defining bazel_build with one
+# of these (or aliasing bazel_binary to a legacy target) makes parity_test
+# compare the legacy build with itself — vacuous evidence. Found in the wild
+# by the coreutils scale probe (2026-06-11).
+LEGACY_WRAPPERS = [
+    "configure_make",
+    "legacy_cargo",
+    "legacy_go_binary",
+    "legacy_make",
+]
+
 
 def runfile(path):
     return os.path.join(os.environ.get("TEST_SRCDIR", "."), "_main", path)
@@ -93,6 +104,28 @@ def check_port(repo, build, readme, upstream, upstream_missing_hint, errors):
                 f"{repo}/BUILD.bazel: missing upstream_inventory_test — the "
                 "wired suite subset must be reconciled against the fetched "
                 "upstream tree (tools/inventory.bzl, ADR 0015)"
+            )
+        for target in ("bazel_build", "bazel_binary"):
+            m = re.search(r'(\w+)\(\s*name = "%s"' % target, build)
+            if m and m.group(1) in LEGACY_WRAPPERS:
+                errors.append(
+                    f"{repo}/BUILD.bazel: '{target}' is defined with "
+                    f"{m.group(1)} — that runs the upstream build system "
+                    "again, so parity_test compares the legacy build with "
+                    "itself. bazel_build must be Bazel-native rules "
+                    "(ADR 0001); if a native build can't land yet, stop "
+                    "honestly instead of aliasing the legacy build"
+                )
+        m = re.search(
+            r'name = "bazel_binary",\s*actual = "[^"]*:legacy_', build
+        ) or re.search(
+            r'actual = "[^"]*:legacy_[^"]*",\s*name = "bazel_binary"', build
+        )
+        if m:
+            errors.append(
+                f"{repo}/BUILD.bazel: 'bazel_binary' aliases a legacy_* "
+                "target — parity_test would compare the legacy build with "
+                "itself (ADR 0001)"
             )
         for src_repo in set(re.findall(r"@([\w-]+_src)//", build)):
             upstream_text = upstream(src_repo) if callable(upstream) else upstream

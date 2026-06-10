@@ -41,7 +41,15 @@ module's own docs (fetched with it, or on GitHub): `docs/playbook.md`
    MODULE.bazel. The baseline is cc, make, POSIX sh. An unavoidable extra
    host tool gets a `requires-<tool>` tag and a documented
    `--test_tag_filters` escape hatch.
-6. **Honest beats green.** A check you can't satisfy gets a written gap,
+6. **`bazel_build` must be Bazel-native.** cc_binary, rust_binary,
+   go_binary, ... (wrapped in `opt_binary` when mirroring a release
+   profile). Running the upstream build system again under the `bazel_*`
+   names — configure_make, legacy_make, legacy_cargo — is not a port: it
+   makes `parity_test` compare the legacy build with itself, which is
+   evidence of nothing. The contract test rejects it. If a native build
+   can't land in your session, stop honestly with the legacy targets and
+   a "Known gaps" entry rather than aliasing the legacy build.
+7. **Honest beats green.** A check you can't satisfy gets a written gap,
    not a workaround that hides it.
 
 ## Step 0: disqualify or scope (before any Bazel work)
