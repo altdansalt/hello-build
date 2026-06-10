@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted.
+Implemented initial tooling.
 
 ## Context
 
@@ -26,10 +26,10 @@ verbose to be the desired pattern for the next Cargo repo.
 
 ## Decision
 
-Treat rmux as the proof-of-concept and create generic Cargo tooling before the
-next serious Rust onboarding.
+Treat rmux as the proof-of-concept and provide reusable Cargo/parity tooling
+before the next serious Rust onboarding.
 
-Required pieces:
+Implemented pieces:
 
 1. `tools/cargo.bzl%legacy_cargo`
    - Accepts an upstream source tree, Cargo manifest/lockfile labels, binary
@@ -42,7 +42,7 @@ Required pieces:
      `--offline`, and extracts outputs.
    - Keeps all network access in Bazel's fetch phase.
 
-2. A crate-universe expansion helper
+2. `tools/cargo/generate_crate_universe_imports.py`
    - Converts `bazel mod show_extension @rules_rust//crate_universe:extensions.bzl%crate`
      into the explicit Bzlmod `use_repo(...)` block needed by strict repo
      visibility.
@@ -50,7 +50,7 @@ Required pieces:
      `vendor_tree`.
    - Makes the generated block auditable and reproducible.
 
-3. A workspace-crate target generator
+3. `tools/cargo/generate_workspace_crates.py`
    - Reads workspace `Cargo.toml` files.
    - Sketches `rust_library` targets for path crates with `crate_name`,
      `crate_root`, direct path deps, `all_crate_deps(package_name=...)`, feature
@@ -58,8 +58,8 @@ Required pieces:
    - Produces a starting point to review, not a blind replacement for human
      build modeling.
 
-4. A richer parity case format
-   - Add JSONL or another structured format so cases can express quoted
+4. `tools/parity:parity_runner.py` and `cases_jsonl`
+   - Adds JSONL cases so tests can express quoted
      arguments, stdin, expected environment, and daemon-free fixtures without
      per-repo shell scripts.
 
@@ -71,5 +71,9 @@ Required pieces:
 - The legacy build can still be the upstream Cargo build even when it uses a
   Bazel-pinned Rust toolchain. "Legacy" means upstream build system and
   commands; it does not require host-installed tools.
-- Until these helpers exist, Cargo examples may be verbose. That verbosity
-  should be documented as tooling debt, not copied as the preferred style.
+- The helpers intentionally generate or consume explicit lists. The generated
+  output should be checked in when it is part of the pinned dependency surface,
+  but it should be treated as generated data, not hand-authored build logic.
+- The checksum helper is currently a Python script run as an executable tool.
+  If this repo later standardizes on a pinned Python toolchain, move it to that
+  toolchain instead of depending on `/usr/bin/env python3`.

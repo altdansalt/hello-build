@@ -1,0 +1,3 @@
+{"label":"version output","args":["-V"]}
+{"label":"command with literal format argument","args":["display-message","-p","#{version}"]}
+{"label":"missing server error with spaced socket name","args":["-L","hello build","list-sessions"]}

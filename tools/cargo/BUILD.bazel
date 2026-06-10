@@ -1,0 +1,12 @@
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+
+sh_binary(
+    name = "synthesize_vendor_checksums",
+    srcs = ["synthesize_vendor_checksums.py"],
+    visibility = ["//visibility:public"],
+)
+
+exports_files([
+    "generate_crate_universe_imports.py",
+    "generate_workspace_crates.py",
+])

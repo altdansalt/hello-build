@@ -7,7 +7,10 @@ filegroup(
     visibility = ["//visibility:public"],
 )
 
-exports_files(["Cargo.toml"])
+exports_files([
+    "Cargo.lock",
+    "Cargo.toml",
+])
 
 rust_library(
     name = "rmux_types",

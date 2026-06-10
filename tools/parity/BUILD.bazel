@@ -1,1 +1,10 @@
 exports_files(["parity_test.sh"])
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+
+sh_binary(
+    name = "parity_runner",
+    srcs = ["parity_runner.py"],
+    visibility = ["//visibility:public"],
+)
+
+exports_files(["parity_runner.py"])
