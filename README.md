@@ -102,3 +102,4 @@ plus tooling (ADR 0019). Each links its own public test invocation:
 | [fleet-hexyl](https://github.com/altdansalt/fleet-hexyl) | hexyl 0.17.0 | cargo/Rust | [6/6 tests](https://app.buildbuddy.io/invocation/5a8e775c-6c72-4eaf-ba18-e50e701c423f) |
 | [fleet-gnu-sed](https://github.com/altdansalt/fleet-gnu-sed) | GNU sed 4.10 | autotools/C | [6/6 tests](https://app.buildbuddy.io/invocation/f2ab4eef-4f24-434c-8bb0-d000a977d169) |
 | [fleet-jq](https://github.com/altdansalt/fleet-jq) | jq 1.8.1 | autotools/C + vendored deps | [6/6 tests](https://app.buildbuddy.io/invocation/4c9d0d1b-58f7-4452-b2b8-7852d4cc394b) |
+| [fleet-gnu-grep](https://github.com/altdansalt/fleet-gnu-grep) | GNU grep 3.12 | autotools/C | [6/6 tests](https://app.buildbuddy.io/invocation/b9ee131e-3512-4897-aaf2-861b13a2feeb) |

@@ -183,4 +183,11 @@ step; go's module cache). Each becomes an ADR or a tools/ wrapper.
   multibyte tests because en_US.UTF-8 / SJIS / ISO-8859-7 locale data is
   host-specific and unpinned — the same host-data class as tmux's
   terminfo lesson. A pinned-locales story (fetched locale archives +
-  LOCPATH) would recover a whole exclusion category across C ports.
+  LOCPATH) would recover a whole exclusion category across C ports
+  (fleet-gnu-grep lost ~20 more tests to it — the largest recurring
+  exclusion class in the fleet).
+- Automake XFAIL polarity: upstream suites mark some tests
+  expected-to-fail (grep's triple-backref, glibc-infloop); fleet drivers
+  treat any failure as failure, so XFAIL tests get excluded. A driver
+  convention for "must fail and did" would recover them — and it is the
+  same polarity idea as ADR 0015, applied per-test.
