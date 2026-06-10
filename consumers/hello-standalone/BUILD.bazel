@@ -3,6 +3,7 @@
 # Mirrors examples/hello in the monorepo; if the two drift, the monorepo one
 # is the spec.
 
+load("@hello_build//tools:contract.bzl", "port_contract_test")
 load("@hello_build//tools:inventory.bzl", "upstream_inventory_test")
 load("@hello_build//tools:make.bzl", "legacy_make")
 load("@hello_build//tools:parity.bzl", "parity_test")
@@ -72,4 +73,11 @@ upstream_inventory_test(
     repo_hint = "_main",
     tree = ":upstream_test_files",
     wired = ["upstream/tests/run_tests.sh"],
+)
+
+# A standalone port checks its own contract — same checks the monorepo's
+# //tools/audit:repo_contract_test applies to every onboarded repo.
+port_contract_test(
+    name = "port_contract_test",
+    repo_name = "hello-standalone",
 )

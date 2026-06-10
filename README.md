@@ -64,6 +64,8 @@ bazel run  //examples/hello:bazel_binary  -- you
 ```
 docs/               vision, goals, principles, decision log, onboarding
                     playbook, per-port run reports (docs/ports/)
+skills/             the porting skill (ADR 0019): the playbook distilled
+                    into agent instructions for standalone fleet ports
 tools/              shared Starlark + scripts (legacy_make, legacy_cargo,
                     parity_test, opt_binary); tools/audit/ holds the
                     repo-wide host-baseline and onboarding-contract tests

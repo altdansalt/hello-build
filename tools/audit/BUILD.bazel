@@ -23,8 +23,12 @@ filegroup(
     visibility = ["//visibility:public"],
 )
 
-# Consumed by tools/inventory.bzl%upstream_inventory_test in repo packages.
-exports_files(["upstream_inventory.py"])
+# Consumed by tools/inventory.bzl%upstream_inventory_test and
+# tools/contract.bzl%port_contract_test in repo/port packages.
+exports_files([
+    "repo_contract_test.py",
+    "upstream_inventory.py",
+])
 
 py_test(
     name = "host_baseline_test",
