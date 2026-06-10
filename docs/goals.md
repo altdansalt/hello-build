@@ -122,3 +122,8 @@ step; go's module cache). Each becomes an ADR or a tools/ wrapper.
   (`toolchains_llvm`) and a pinned `make` are the obvious candidates; each
   is its own ADR.
 - redis tcl `integration/*` units as an opt-in `size = "enormous"` tier.
+- Test-count floors: inventory reconciliation (ADR 0015) is file-level; a
+  test function dropped *inside* a wired file is invisible to it. The
+  runners already report verified-unit counts, so a "ran at least N tests"
+  assertion per suite is the next ratchet if function-level drops ever
+  bite.

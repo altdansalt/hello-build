@@ -59,3 +59,14 @@ Three mechanisms, all enforced by `bazel test //...`:
   expansion tracked in goals" is an acceptable reason — silence is not.
 - The cram runner is reusable for any cram-format upstream (mercurial-style
   `.t` suites) with its semantics pinned by tests.
+
+## Known residual: reconciliation is file-level
+
+The inventory sees test *files*, not test *functions*: a test dropped from
+within a wired file (a `#[test]` in an rmux `tests/*.rs`, a tcl proc inside
+a wired unit) passes reconciliation. Both real drops to date were
+file-level, so this is the right cost/benefit for now. If it ever needs
+tightening, the next ratchet is count-based: the runners already print how
+many units they verified ("passed N cram tests", libtest's "N passed"), so
+a suite target can assert "ran at least N tests" and a version bump that
+quietly loses functions trips the floor. Tracked in docs/goals.md.
