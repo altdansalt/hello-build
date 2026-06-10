@@ -233,4 +233,6 @@ Use this path for Cargo workspaces (ADR 0007):
 
 `bazel clean --expunge && bazel test //...` passes on this host (not just
 `//<repo>:all` — your change must not break the others), and the README
-table row is honest about coverage and gaps.
+table row is honest about coverage and gaps. The disk cache in `.bazelrc`
+keeps the expunge run cheap by replaying unchanged results (ADR 0013);
+iterate with plain incremental `bazel test //...`.

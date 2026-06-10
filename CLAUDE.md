@@ -48,7 +48,10 @@ The repo documents itself: read these before changing anything.
   fast test).
 - **Definition of done** for any onboarding or tooling change:
   `bazel clean --expunge && bazel test //...` passes on this host, and the
-  root README table row honestly states coverage and gaps.
+  root README table row honestly states coverage and gaps. (The disk cache
+  in .bazelrc keeps this fast by replaying unchanged results — ADR 0013;
+  use incremental `bazel test //...` while iterating, and delete
+  `~/.cache/hello-build/disk-cache` only for a true cold run.)
 - Test scripts referenced by `sh_test(srcs=...)` must be `chmod +x`.
 
 ## Hard-won gotchas (cost real debugging time; don't rediscover them)
@@ -78,3 +81,6 @@ The repo documents itself: read these before changing anything.
 - The sandbox keeps the test executable's directory and the source tree
   read-only; upstream tests that write next to themselves need a skip with
   a reason, not a looser sandbox.
+- Flaky upstream tests follow the ladder in ADR 0014: record next to the
+  target → `flaky = True` on that one target → documented skip. Never
+  blanket `--flaky_test_attempts`, never retry loops in scripts.

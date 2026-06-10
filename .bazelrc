@@ -8,4 +8,10 @@ build --sandbox_default_allow_network=false
 # Reproducibility: don't leak the user's environment into actions.
 build --incompatible_strict_action_env
 
+# Content-addressed cache that survives `bazel clean --expunge`, so the
+# definition-of-done run re-verifies fetch/load/analysis from scratch while
+# replaying unchanged action and test results (ADR 0013). Deleting this
+# directory is the "true cold" tier.
+build --disk_cache=~/.cache/hello-build/disk-cache
+
 test --test_output=errors
