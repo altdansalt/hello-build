@@ -112,6 +112,12 @@ step; go's module cache). Each becomes an ADR or a tools/ wrapper.
   regression test for `tools/cargo.bzl` and `opt_binary`, so tooling changes
   don't need a multi-minute rmux rebuild to validate (ADR 0010 names this as
   the known gap).
+- Flake tracking for full-repo definition-of-done runs: when an existing
+  upstream/integration test fails during an unrelated port and passes on
+  immediate rerun, record the exact target, symptom, and date in that repo's
+  README or a dedicated flake log before tagging or excluding anything. The
+  goal is faster triage without weakening the default `bazel test //...`
+  signal.
 - Shrink the host baseline (ADR 0009): hermetic C toolchain
   (`toolchains_llvm`) and a pinned `make` are the obvious candidates; each
   is its own ADR.

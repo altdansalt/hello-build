@@ -85,3 +85,14 @@ formatter, so it is tagged `requires-man` (ADR 0005);
 - `vendor_crates.bzl` and the MODULE.bazel crate annotations are generated
   pinned data — regenerate with `tools/cargo/generate_crate_universe_imports.py`
   when the lockfile changes, don't hand-edit.
+
+Observed flakes during unrelated full-repo runs:
+
+- 2026-06-10: `@rmux_src//:it_canonical_workflow`
+  (`canonical_session_workflow_runs_end_to_end`) timed out waiting for
+  `ctrl-c-recovered` during `bazel clean --expunge && bazel test //...`;
+  immediate targeted rerun passed.
+- 2026-06-10: `@rmux_src//:it_cli_surface`
+  (`self_unsetting_hook_payload_runs_once_across_repeated_attaches`) exited
+  1 instead of 0 during `bazel clean --expunge && bazel test //...`;
+  immediate targeted rerun passed.

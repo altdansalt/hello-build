@@ -16,13 +16,13 @@ genrule(
     srcs = [
         "configure",
         ":tree",
-        "@pcre_src//:install/include/pcre.h",
-        "@pcre_src//:install/lib/libpcre.a",
-        "@xz_src//:headers",
-        "@xz_src//:install/include/lzma.h",
-        "@xz_src//:install/lib/liblzma.a",
-        "@zlib_src//:install/include/zlib.h",
-        "@zlib_src//:install/lib/libz.a",
+        "@pcre_src//:pcre_install/include/pcre.h",
+        "@pcre_src//:pcre_install/lib/libpcre.a",
+        "@xz_src//:lzma_headers",
+        "@xz_src//:lzma_install/include/lzma.h",
+        "@xz_src//:lzma_install/lib/liblzma.a",
+        "@zlib_src//:zlib_install/include/zlib.h",
+        "@zlib_src//:zlib_install/lib/libz.a",
     ],
     outs = ["generated/config.h"],
     cmd = """\
@@ -34,12 +34,12 @@ mkdir -p "$$builddir/home"
 cp -aL "$$srcdir/." "$$builddir/src"
 chmod -R u+w "$$builddir/src"
 cd "$$builddir/src"
-pcre_inc="$$execroot/$$(dirname "$(execpath @pcre_src//:install/include/pcre.h)")"
-pcre_lib="$$execroot/$(execpath @pcre_src//:install/lib/libpcre.a)"
-lzma_inc="$$execroot/$$(dirname "$(execpath @xz_src//:install/include/lzma.h)")"
-lzma_libdir="$$execroot/$$(dirname "$(execpath @xz_src//:install/lib/liblzma.a)")"
-zlib_inc="$$execroot/$$(dirname "$(execpath @zlib_src//:install/include/zlib.h)")"
-zlib_libdir="$$execroot/$$(dirname "$(execpath @zlib_src//:install/lib/libz.a)")"
+pcre_inc="$$execroot/$$(dirname "$(execpath @pcre_src//:pcre_install/include/pcre.h)")"
+pcre_lib="$$execroot/$(execpath @pcre_src//:pcre_install/lib/libpcre.a)"
+lzma_inc="$$execroot/$$(dirname "$(execpath @xz_src//:lzma_install/include/lzma.h)")"
+lzma_libdir="$$execroot/$$(dirname "$(execpath @xz_src//:lzma_install/lib/liblzma.a)")"
+zlib_inc="$$execroot/$$(dirname "$(execpath @zlib_src//:zlib_install/include/zlib.h)")"
+zlib_libdir="$$execroot/$$(dirname "$(execpath @zlib_src//:zlib_install/lib/libz.a)")"
 env -i PATH=/usr/bin:/bin HOME="$$builddir/home" SOURCE_DATE_EPOCH=0 \
     CFLAGS="-fcommon" \
     PCRE_CFLAGS="-I$$pcre_inc" \

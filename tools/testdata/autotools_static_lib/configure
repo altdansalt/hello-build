@@ -1,0 +1,28 @@
+#!/bin/sh
+set -e
+
+prefix=/usr/local
+for arg in "$@"; do
+    case "$arg" in
+        --prefix=*) prefix=${arg#--prefix=} ;;
+    esac
+done
+
+cat > Makefile <<MAKEFILE
+CC ?= cc
+AR ?= ar
+CFLAGS ?= -O2
+
+all: libautotools_static_lib.a
+
+libautotools_static_lib.a: autotools_static_lib.o
+	\$(AR) rcs \$@ \$<
+
+autotools_static_lib.o: autotools_static_lib.c autotools_static_lib.h
+	\$(CC) \$(CFLAGS) -c autotools_static_lib.c -o \$@
+
+install: libautotools_static_lib.a
+	mkdir -p "$prefix/include" "$prefix/lib"
+	cp autotools_static_lib.h "$prefix/include/autotools_static_lib.h"
+	cp libautotools_static_lib.a "$prefix/lib/libautotools_static_lib.a"
+MAKEFILE

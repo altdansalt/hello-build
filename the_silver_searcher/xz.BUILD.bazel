@@ -1,6 +1,4 @@
-load("@hello_build//tools:autotools.bzl", "configure_make_install")
-load("@rules_cc//cc:cc_import.bzl", "cc_import")
-load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load("@hello_build//tools:autotools.bzl", "configure_static_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -29,8 +27,8 @@ filegroup(
 
 exports_files(["configure"])
 
-configure_make_install(
-    name = "install",
+configure_static_library(
+    name = "lzma",
     srcs = [":tree"],
     configure = "configure",
     configure_args = [
@@ -44,22 +42,6 @@ configure_make_install(
         "--disable-xzdec",
         "--enable-static",
     ],
-    out_files = LZMA_HEADERS + ["lib/liblzma.a"],
-)
-
-cc_import(
-    name = "lzma_static",
-    static_library = "install/lib/liblzma.a",
-)
-
-cc_library(
-    name = "lzma",
-    hdrs = ["install/%s" % h for h in LZMA_HEADERS],
-    includes = ["install/include"],
-    deps = [":lzma_static"],
-)
-
-filegroup(
-    name = "headers",
-    srcs = ["install/%s" % h for h in LZMA_HEADERS],
+    hdrs = LZMA_HEADERS,
+    static_library = "lib/liblzma.a",
 )

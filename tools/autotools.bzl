@@ -1,5 +1,8 @@
 """Generic configure/make wrappers for legacy autotools-style projects."""
 
+load("@rules_cc//cc:cc_import.bzl", "cc_import")
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+
 def _quote(value):
     return "'" + value.replace("'", "'\"'\"'") + "'"
 
@@ -173,3 +176,67 @@ fi
     )
 
     _binary_targets(name, out_binaries, visibility)
+
+def configure_static_library(
+        name,
+        srcs,
+        configure,
+        hdrs,
+        static_library,
+        configure_args = [],
+        make_args = [],
+        env = {},
+        jobs = "auto",
+        includes = ["include"],
+        visibility = None):
+    """Builds and exposes a static C library installed by configure/make.
+
+    Args:
+      name: public cc_library target name.
+      srcs: source tree filegroup or labels for the dependency archive.
+      configure: label/path of the upstream configure script.
+      hdrs: install-prefix-relative headers to expose, e.g. ["include/foo.h"].
+      static_library: install-prefix-relative archive, e.g. "lib/libfoo.a".
+      configure_args: arguments for ./configure; use upstream-supported knobs.
+      make_args: extra make arguments/variables.
+      env: scrubbed-environment additions for configure/make.
+      jobs: parallelism, as in configure_make_install.
+      includes: install-prefix-relative include directories for dependents.
+      visibility: visibility for the public cc_library.
+
+    Also creates `<name>_install`, `<name>_static`, and `<name>_headers`.
+    `<name>_headers` is useful when another configure action needs all headers,
+    not just the top-level one named in an `$(execpath ...)` expression.
+    """
+    install_name = name + "_install"
+    installed_hdrs = ["%s/%s" % (install_name, h) for h in hdrs]
+
+    configure_make_install(
+        name = install_name,
+        srcs = srcs,
+        configure = configure,
+        configure_args = configure_args,
+        make_args = make_args,
+        env = env,
+        jobs = jobs,
+        out_files = list(hdrs) + [static_library],
+    )
+
+    cc_import(
+        name = name + "_static",
+        static_library = "%s/%s" % (install_name, static_library),
+    )
+
+    cc_library(
+        name = name,
+        hdrs = installed_hdrs,
+        includes = ["%s/%s" % (install_name, include) for include in includes],
+        deps = [":%s_static" % name],
+        visibility = visibility,
+    )
+
+    native.filegroup(
+        name = name + "_headers",
+        srcs = installed_hdrs,
+        visibility = visibility,
+    )

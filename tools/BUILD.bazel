@@ -1,5 +1,6 @@
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
-load("//tools:autotools.bzl", "configure_make")
+load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
+load("//tools:autotools.bzl", "configure_make", "configure_static_library")
 
 # Shared Starlark tooling lives here; runtime scripts live in subpackages.
 
@@ -27,4 +28,31 @@ sh_test(
     srcs = ["testdata/run_autotools_smoke.sh"],
     data = [":autotools_smoke_build_hello"],
     env = {"HELLO_BIN": "$(rootpath :autotools_smoke_build_hello)"},
+)
+
+filegroup(
+    name = "autotools_static_lib_tree",
+    srcs = glob(["testdata/autotools_static_lib/**"]),
+)
+
+configure_static_library(
+    name = "autotools_static_lib",
+    srcs = [":autotools_static_lib_tree"],
+    configure = "testdata/autotools_static_lib/configure",
+    hdrs = ["include/autotools_static_lib.h"],
+    static_library = "lib/libautotools_static_lib.a",
+)
+
+cc_binary(
+    name = "autotools_static_lib_user",
+    srcs = ["testdata/autotools_static_lib_user.c"],
+    deps = [":autotools_static_lib"],
+)
+
+sh_test(
+    name = "autotools_static_lib_test",
+    size = "small",
+    srcs = ["testdata/run_autotools_static_lib.sh"],
+    data = [":autotools_static_lib_user"],
+    env = {"BIN": "$(rootpath :autotools_static_lib_user)"},
 )

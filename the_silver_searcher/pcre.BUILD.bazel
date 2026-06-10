@@ -1,6 +1,4 @@
-load("@hello_build//tools:autotools.bzl", "configure_make_install")
-load("@rules_cc//cc:cc_import.bzl", "cc_import")
-load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load("@hello_build//tools:autotools.bzl", "configure_static_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -11,8 +9,8 @@ filegroup(
 
 exports_files(["configure"])
 
-configure_make_install(
-    name = "install",
+configure_static_library(
+    name = "pcre",
     srcs = [":tree"],
     configure = "configure",
     configure_args = [
@@ -22,24 +20,9 @@ configure_make_install(
         "--enable-unicode-properties",
         "--enable-utf",
     ],
-    out_files = [
+    hdrs = [
         "include/pcre.h",
         "include/pcreposix.h",
-        "lib/libpcre.a",
     ],
-)
-
-cc_import(
-    name = "pcre_static",
-    static_library = "install/lib/libpcre.a",
-)
-
-cc_library(
-    name = "pcre",
-    hdrs = [
-        "install/include/pcre.h",
-        "install/include/pcreposix.h",
-    ],
-    includes = ["install/include"],
-    deps = [":pcre_static"],
+    static_library = "lib/libpcre.a",
 )

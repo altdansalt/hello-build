@@ -74,6 +74,38 @@ load that metadata from the pinned archive.
 - Trial-run the upstream test suite the same way and time it; pick the
   subset/tags story before wiring it into Bazel.
 
+### Autotools/C checklist
+
+Use this path for generated-`configure` projects (ADR 0012):
+
+- Prefer an official release tarball that already contains `configure`,
+  `Makefile.in`, and generated headers/templates. A GitHub tag archive may
+  omit those files even when the release tarball has them. If only
+  `configure.ac` is shipped, stop and design a pinned autotools-generation
+  story before adding host autoconf/automake to the baseline.
+- For external C dependencies, pin their release archives in `MODULE.bazel`
+  and expose them with `tools/autotools.bzl%configure_static_library` when
+  they install a static archive plus headers. Keep each dependency's
+  upstream configure flags in its injected BUILD file.
+- Configure probes need all headers they include, not just the one named in
+  an `$(execpath ...)` expression. Use the helper's `<name>_headers`
+  filegroup in configure actions when a header pulls in subheaders
+  (`lzma.h` including `lzma/*.h`, for example).
+- Capture `config.h` facts from the same pinned dependency set the legacy
+  build uses. Generate it by running upstream `configure` in a genrule with
+  matching `CPPFLAGS`, `CFLAGS`, `LDFLAGS`, and `*_LIBS`; do not hand-write
+  configure results.
+- Watch for modern compiler default shifts. Older C projects may require
+  `-fcommon` with GCC 10+ because upstream headers define tentative globals.
+  If the legacy build needs such a flag, put it on both sides and document it
+  in the repo README's "Build profile" section.
+- If an upstream text suite uses a small harness that is outside the host
+  baseline (`cram`, `prove`, simple Python helpers), either fetch/build that
+  harness as a pinned tool or write a narrow runner under the repo using the
+  pinned `rules_python` toolchain. The runner may implement only the upstream
+  suite's used feature subset, but the upstream test files themselves remain
+  the coverage and every excluded test still needs a written reason.
+
 ## 1. Pin the upstream source
 
 - Pick a pinned release (a tag, not a moving branch). Add an `http_archive`
