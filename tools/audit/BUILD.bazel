@@ -8,6 +8,7 @@ AUDITED = [
     "//examples/hello:audit_srcs",
     "//redis:audit_srcs",
     "//rmux:audit_srcs",
+    "//the_silver_searcher:audit_srcs",
     "//tools:audit_srcs",
     "//tools/cargo:audit_srcs",
     "//tools/parity:audit_srcs",

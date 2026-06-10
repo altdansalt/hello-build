@@ -1,0 +1,39 @@
+load("@hello_build//tools:autotools.bzl", "configure_make_install")
+load("@rules_cc//cc:cc_import.bzl", "cc_import")
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "tree",
+    srcs = glob(["**"]),
+)
+
+exports_files(["configure"])
+
+configure_make_install(
+    name = "install",
+    srcs = [":tree"],
+    configure = "configure",
+    configure_args = ["--static"],
+    out_files = [
+        "include/zconf.h",
+        "include/zlib.h",
+        "lib/libz.a",
+    ],
+)
+
+cc_import(
+    name = "z_static",
+    static_library = "install/lib/libz.a",
+)
+
+cc_library(
+    name = "zlib",
+    hdrs = [
+        "install/include/zconf.h",
+        "install/include/zlib.h",
+    ],
+    includes = ["install/include"],
+    deps = [":z_static"],
+)

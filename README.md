@@ -77,5 +77,6 @@ examples/hello/     toy upstream repo demonstrating the full pattern
 | [examples/hello](examples/hello) | make | ✅ all seven targets green |
 | [redis](redis) (7.2.7) | make | ✅ all seven + functional/cli variants; tcl suite tagged `requires-tclsh`; benchmark/sentinel/modules not in Bazel build yet |
 | [rmux](rmux) (0.5.0) | cargo | ✅ all seven + functional variants for `--no-default-features`; upstream suite (3458 tests) wired on both sides, 5 tests excluded with reasons; web feature not built |
+| [the_silver_searcher](the_silver_searcher) (2.2.0) | autotools/C | ✅ all seven; PCRE, zlib, and xz/liblzma built from pinned source; 39 upstream cram tests run on both sides; big/known-fail/style tests excluded with reasons |
 
 To add one, follow [docs/playbook.md](docs/playbook.md).

@@ -1,0 +1,26 @@
+Project: the_silver_searcher
+Version: 2.2.0
+Primary source URL: https://geoff.greer.fm/ag/releases/the_silver_searcher-2.2.0.tar.gz
+Primary source sha256: d9621a878542f3733b5c6e71c849b9d1a830ed77cb1a1f6c2ea441d4b0643170
+Test source URL: https://github.com/ggreer/the_silver_searcher/archive/refs/tags/2.2.0.tar.gz
+Test source sha256: 6a0a19ca5e73b2bef9481c29a508d2413ca1a0a9a5a6b1bd9bbd695a7626cbf9
+Retrieval date: 2026-06-10
+License rationale: Apache-2.0 license in LICENSE; NOTICE retained in the fetched archive.
+
+Dependency: PCRE
+Version: 8.45
+Source URL: https://downloads.sourceforge.net/project/pcre/pcre/8.45/pcre-8.45.tar.gz
+sha256: 4e6ce03e0336e8b4a3d6c2b70b1c5e18590a5673a98186da90d4f33c23defc09
+License rationale: BSD-style PCRE license in LICENCE; required by upstream configure.ac.
+
+Dependency: zlib
+Version: 1.3.1
+Source URL: https://zlib.net/fossils/zlib-1.3.1.tar.gz
+sha256: 9a93b2b7dfdac77ceba5a558a580e74667dd6fede4585b91eefb60f03b72df23
+License rationale: zlib license in LICENSE; optional compressed-search support enabled to match upstream defaults.
+
+Dependency: xz/liblzma
+Version: 5.4.7
+Source URL: https://github.com/tukaani-project/xz/releases/download/v5.4.7/xz-5.4.7.tar.gz
+sha256: 8db6664c48ca07908b92baedcfe7f3ba23f49ef2476864518ab5db6723836e71
+License rationale: public domain / LGPL terms documented by upstream; liblzma is optional compressed-search support enabled to match upstream defaults.

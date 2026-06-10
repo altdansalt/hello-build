@@ -1,0 +1,4 @@
+{"label":"version","args":["--version"]}
+{"label":"literal stdin","args":["--nocolor","--workers=1","needle"],"stdin":"hay\nneedle\n"}
+{"label":"count stdin","args":["--count","needle"],"stdin":"needle needle\nneedle\n"}
+{"label":"files with matches stdin","args":["--files-with-matches","needle"],"stdin":"needle\n"}

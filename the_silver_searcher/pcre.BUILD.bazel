@@ -1,0 +1,45 @@
+load("@hello_build//tools:autotools.bzl", "configure_make_install")
+load("@rules_cc//cc:cc_import.bzl", "cc_import")
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "tree",
+    srcs = glob(["**"]),
+)
+
+exports_files(["configure"])
+
+configure_make_install(
+    name = "install",
+    srcs = [":tree"],
+    configure = "configure",
+    configure_args = [
+        "--disable-cpp",
+        "--disable-shared",
+        "--enable-static",
+        "--enable-unicode-properties",
+        "--enable-utf",
+    ],
+    out_files = [
+        "include/pcre.h",
+        "include/pcreposix.h",
+        "lib/libpcre.a",
+    ],
+)
+
+cc_import(
+    name = "pcre_static",
+    static_library = "install/lib/libpcre.a",
+)
+
+cc_library(
+    name = "pcre",
+    hdrs = [
+        "install/include/pcre.h",
+        "install/include/pcreposix.h",
+    ],
+    includes = ["install/include"],
+    deps = [":pcre_static"],
+)

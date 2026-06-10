@@ -1,0 +1,84 @@
+load("@hello_build//the_silver_searcher:srcs.bzl", "AG_COPTS", "AG_HDRS", "AG_SRCS")
+load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "tree",
+    srcs = glob(["**"]),
+)
+
+exports_files(["configure"])
+
+genrule(
+    name = "config_h",
+    srcs = [
+        "configure",
+        ":tree",
+        "@pcre_src//:install/include/pcre.h",
+        "@pcre_src//:install/lib/libpcre.a",
+        "@xz_src//:headers",
+        "@xz_src//:install/include/lzma.h",
+        "@xz_src//:install/lib/liblzma.a",
+        "@zlib_src//:install/include/zlib.h",
+        "@zlib_src//:install/lib/libz.a",
+    ],
+    outs = ["generated/config.h"],
+    cmd = """\
+set -e
+srcdir="$$(dirname "$(execpath configure)")"
+execroot="$$PWD"
+builddir=$$(mktemp -d)
+mkdir -p "$$builddir/home"
+cp -aL "$$srcdir/." "$$builddir/src"
+chmod -R u+w "$$builddir/src"
+cd "$$builddir/src"
+pcre_inc="$$execroot/$$(dirname "$(execpath @pcre_src//:install/include/pcre.h)")"
+pcre_lib="$$execroot/$(execpath @pcre_src//:install/lib/libpcre.a)"
+lzma_inc="$$execroot/$$(dirname "$(execpath @xz_src//:install/include/lzma.h)")"
+lzma_libdir="$$execroot/$$(dirname "$(execpath @xz_src//:install/lib/liblzma.a)")"
+zlib_inc="$$execroot/$$(dirname "$(execpath @zlib_src//:install/include/zlib.h)")"
+zlib_libdir="$$execroot/$$(dirname "$(execpath @zlib_src//:install/lib/libz.a)")"
+env -i PATH=/usr/bin:/bin HOME="$$builddir/home" SOURCE_DATE_EPOCH=0 \
+    CFLAGS="-fcommon" \
+    PCRE_CFLAGS="-I$$pcre_inc" \
+    PCRE_LIBS="$$pcre_lib" \
+    LZMA_CFLAGS="-I$$lzma_inc" \
+    LZMA_LIBS="-L$$lzma_libdir -llzma" \
+    CPPFLAGS="-I$$pcre_inc -I$$lzma_inc -I$$zlib_inc" \
+    LDFLAGS="-L$$zlib_libdir -L$$lzma_libdir" \
+    ./configure > "$$builddir/configure.log" 2>&1 || {
+        echo "--- configure failed; log follows ---" >&2
+        cat "$$builddir/configure.log" >&2
+        exit 1
+    }
+cp src/config.h "$$execroot/$@"
+""",
+)
+
+cc_library(
+    name = "generated_config",
+    hdrs = ["generated/config.h"],
+    includes = ["generated"],
+)
+
+cc_library(
+    name = "headers",
+    hdrs = AG_HDRS,
+    includes = ["src"],
+    deps = [":generated_config"],
+)
+
+cc_binary(
+    name = "ag",
+    srcs = AG_SRCS + AG_HDRS,
+    copts = AG_COPTS,
+    linkopts = ["-pthread"],
+    deps = [
+        ":headers",
+        "@pcre_src//:pcre",
+        "@xz_src//:lzma",
+        "@zlib_src//:zlib",
+    ],
+)

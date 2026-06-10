@@ -1,0 +1,20 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "tree",
+    srcs = glob(["**"]),
+)
+
+filegroup(
+    name = "tests",
+    srcs = glob([
+        "tests/*.t",
+        "tests/fail/*.t",
+        "tests/big/*.t",
+        "tests/*.txt",
+        "tests/*.pdf",
+        "tests/setup.sh",
+    ]),
+)
+
+exports_files(glob(["tests/**"]))

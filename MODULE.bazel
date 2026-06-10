@@ -23,6 +23,46 @@ python.toolchain(
 
 http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
+http_archive(
+    name = "the_silver_searcher_src",
+    build_file = "//the_silver_searcher:the_silver_searcher.BUILD.bazel",
+    sha256 = "d9621a878542f3733b5c6e71c849b9d1a830ed77cb1a1f6c2ea441d4b0643170",
+    strip_prefix = "the_silver_searcher-2.2.0",
+    url = "https://geoff.greer.fm/ag/releases/the_silver_searcher-2.2.0.tar.gz",
+)
+
+http_archive(
+    name = "the_silver_searcher_tests_src",
+    build_file = "//the_silver_searcher:the_silver_searcher_tests.BUILD.bazel",
+    sha256 = "6a0a19ca5e73b2bef9481c29a508d2413ca1a0a9a5a6b1bd9bbd695a7626cbf9",
+    strip_prefix = "the_silver_searcher-2.2.0",
+    url = "https://github.com/ggreer/the_silver_searcher/archive/refs/tags/2.2.0.tar.gz",
+)
+
+http_archive(
+    name = "pcre_src",
+    build_file = "//the_silver_searcher:pcre.BUILD.bazel",
+    sha256 = "4e6ce03e0336e8b4a3d6c2b70b1c5e18590a5673a98186da90d4f33c23defc09",
+    strip_prefix = "pcre-8.45",
+    url = "https://downloads.sourceforge.net/project/pcre/pcre/8.45/pcre-8.45.tar.gz",
+)
+
+http_archive(
+    name = "xz_src",
+    build_file = "//the_silver_searcher:xz.BUILD.bazel",
+    sha256 = "8db6664c48ca07908b92baedcfe7f3ba23f49ef2476864518ab5db6723836e71",
+    strip_prefix = "xz-5.4.7",
+    url = "https://github.com/tukaani-project/xz/releases/download/v5.4.7/xz-5.4.7.tar.gz",
+)
+
+http_archive(
+    name = "zlib_src",
+    build_file = "//the_silver_searcher:zlib.BUILD.bazel",
+    sha256 = "9a93b2b7dfdac77ceba5a558a580e74667dd6fede4585b91eefb60f03b72df23",
+    strip_prefix = "zlib-1.3.1",
+    url = "https://zlib.net/fossils/zlib-1.3.1.tar.gz",
+)
+
 rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
 rust.toolchain(
     edition = "2021",

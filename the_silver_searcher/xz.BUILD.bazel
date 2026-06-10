@@ -1,0 +1,65 @@
+load("@hello_build//tools:autotools.bzl", "configure_make_install")
+load("@rules_cc//cc:cc_import.bzl", "cc_import")
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+LZMA_HEADERS = [
+    "include/lzma.h",
+    "include/lzma/base.h",
+    "include/lzma/bcj.h",
+    "include/lzma/block.h",
+    "include/lzma/check.h",
+    "include/lzma/container.h",
+    "include/lzma/delta.h",
+    "include/lzma/filter.h",
+    "include/lzma/hardware.h",
+    "include/lzma/index.h",
+    "include/lzma/index_hash.h",
+    "include/lzma/lzma12.h",
+    "include/lzma/stream_flags.h",
+    "include/lzma/version.h",
+    "include/lzma/vli.h",
+]
+
+filegroup(
+    name = "tree",
+    srcs = glob(["**"]),
+)
+
+exports_files(["configure"])
+
+configure_make_install(
+    name = "install",
+    srcs = [":tree"],
+    configure = "configure",
+    configure_args = [
+        "--disable-doc",
+        "--disable-lzmadec",
+        "--disable-lzmainfo",
+        "--disable-nls",
+        "--disable-scripts",
+        "--disable-shared",
+        "--disable-xz",
+        "--disable-xzdec",
+        "--enable-static",
+    ],
+    out_files = LZMA_HEADERS + ["lib/liblzma.a"],
+)
+
+cc_import(
+    name = "lzma_static",
+    static_library = "install/lib/liblzma.a",
+)
+
+cc_library(
+    name = "lzma",
+    hdrs = ["install/%s" % h for h in LZMA_HEADERS],
+    includes = ["install/include"],
+    deps = [":lzma_static"],
+)
+
+filegroup(
+    name = "headers",
+    srcs = ["install/%s" % h for h in LZMA_HEADERS],
+)

@@ -1,0 +1,147 @@
+load("@rules_python//python:defs.bzl", "py_test")
+load("//tools:autotools.bzl", "configure_make")
+load("//tools:parity.bzl", "parity_test")
+
+UPSTREAM_TESTS = [
+    "adjacent_matches.t",
+    "bad_path.t",
+    "case_sensitivity.t",
+    "color.t",
+    "column.t",
+    "count.t",
+    "ds_store_ignore.t",
+    "empty_match.t",
+    "exitcodes.t",
+    "files_with_matches.t",
+    "filetype.t",
+    "hidden_option.t",
+    "ignore_abs_path.t",
+    "ignore_absolute_search_path_with_glob.t",
+    "ignore_backups.t",
+    "ignore_extensions.t",
+    "ignore_gitignore.t",
+    "ignore_invert.t",
+    "ignore_pattern_in_subdirectory.t",
+    "ignore_subdir.t",
+    "ignore_vcs.t",
+    "invert_match.t",
+    "is_binary_pdf.t",
+    "line_width.t",
+    "list_file_types.t",
+    "literal_word_regexp.t",
+    "max_count.t",
+    "multiline.t",
+    "negated_options.t",
+    "only_matching.t",
+    "option_g.t",
+    "option_smartcase.t",
+    "passthrough.t",
+    "pipecontext.t",
+    "print_all_files.t",
+    "print_end.t",
+    "search_stdin.t",
+    "vimgrep.t",
+    "word_regexp.t",
+]
+
+configure_make(
+    name = "legacy_build",
+    srcs = [
+        "@the_silver_searcher_src//:tree",
+        "@pcre_src//:install/include/pcre.h",
+        "@pcre_src//:install/lib/libpcre.a",
+        "@xz_src//:headers",
+        "@xz_src//:install/include/lzma.h",
+        "@xz_src//:install/lib/liblzma.a",
+        "@zlib_src//:install/include/zlib.h",
+        "@zlib_src//:install/lib/libz.a",
+    ],
+    configure = "@the_silver_searcher_src//:configure",
+    env = {
+        "CPPFLAGS": "-I$$execroot/$$(dirname $(execpath @pcre_src//:install/include/pcre.h)) -I$$execroot/$$(dirname $(execpath @xz_src//:install/include/lzma.h)) -I$$execroot/$$(dirname $(execpath @zlib_src//:install/include/zlib.h))",
+        "CFLAGS": "-fcommon",
+        "LDFLAGS": "-L$$execroot/$$(dirname $(execpath @zlib_src//:install/lib/libz.a)) -L$$execroot/$$(dirname $(execpath @xz_src//:install/lib/liblzma.a))",
+        "LZMA_CFLAGS": "-I$$execroot/$$(dirname $(execpath @xz_src//:install/include/lzma.h))",
+        "LZMA_LIBS": "-L$$execroot/$$(dirname $(execpath @xz_src//:install/lib/liblzma.a)) -llzma",
+        "PCRE_CFLAGS": "-I$$execroot/$$(dirname $(execpath @pcre_src//:install/include/pcre.h))",
+        "PCRE_LIBS": "$$execroot/$(execpath @pcre_src//:install/lib/libpcre.a)",
+    },
+    out_binaries = ["ag"],
+)
+
+alias(
+    name = "legacy_binary",
+    actual = ":legacy_build_ag",
+)
+
+alias(
+    name = "bazel_build",
+    actual = "@the_silver_searcher_src//:ag",
+)
+
+alias(
+    name = "bazel_binary",
+    actual = "@the_silver_searcher_src//:ag",
+)
+
+py_test(
+    name = "legacy_test",
+    size = "medium",
+    srcs = ["tests/cram_runner.py"],
+    main = "tests/cram_runner.py",
+    args = [
+        "--binary",
+        "$(rootpath :legacy_binary)",
+        "--setup",
+        "$(rootpath @the_silver_searcher_tests_src//:tests/setup.sh)",
+    ] + [
+        "$(rootpath @the_silver_searcher_tests_src//:tests/%s)" % test
+        for test in UPSTREAM_TESTS
+    ],
+    data = [
+        ":legacy_binary",
+        "@the_silver_searcher_tests_src//:tests",
+        "@the_silver_searcher_tests_src//:tests/setup.sh",
+    ] + [
+        "@the_silver_searcher_tests_src//:tests/%s" % test
+        for test in UPSTREAM_TESTS
+    ],
+)
+
+py_test(
+    name = "bazel_test",
+    size = "medium",
+    srcs = ["tests/cram_runner.py"],
+    main = "tests/cram_runner.py",
+    args = [
+        "--binary",
+        "$(rootpath @the_silver_searcher_src//:ag)",
+        "--setup",
+        "$(rootpath @the_silver_searcher_tests_src//:tests/setup.sh)",
+    ] + [
+        "$(rootpath @the_silver_searcher_tests_src//:tests/%s)" % test
+        for test in UPSTREAM_TESTS
+    ],
+    data = [
+        "@the_silver_searcher_src//:ag",
+        "@the_silver_searcher_tests_src//:tests",
+        "@the_silver_searcher_tests_src//:tests/setup.sh",
+    ] + [
+        "@the_silver_searcher_tests_src//:tests/%s" % test
+        for test in UPSTREAM_TESTS
+    ],
+)
+
+parity_test(
+    name = "parity_test",
+    size = "small",
+    bazel_binary = ":bazel_binary",
+    cases_jsonl = "parity_cases.jsonl",
+    legacy_binary = ":legacy_binary",
+)
+
+filegroup(
+    name = "audit_srcs",
+    srcs = glob(["**"]),
+    visibility = ["//tools/audit:__pkg__"],
+)
