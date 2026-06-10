@@ -62,5 +62,6 @@ examples/hello/     toy upstream repo demonstrating the full pattern
 |---|---|---|
 | [examples/hello](examples/hello) | make | ✅ all seven targets green |
 | [redis](redis) (7.2.7) | make | ✅ all seven + functional/cli variants; tcl suite tagged `requires-tclsh`; benchmark/sentinel/modules not in Bazel build yet |
+| [rmux](rmux) (0.5.0) | cargo | ✅ all seven targets green for `--no-default-features`; full daemon suite and optional web feature not wired yet |
 
 To add one, follow [docs/playbook.md](docs/playbook.md).

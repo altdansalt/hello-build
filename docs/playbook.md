@@ -4,16 +4,47 @@ The order below is deliberate: each step produces a working, testable state,
 and the legacy build comes first because it is the spec the Bazel build must
 match (docs/principles.md).
 
-## 0. Scout outside Bazel first (cheap iteration)
+## 0. Choose the repo and build-system strategy
 
-Before writing any BUILD file, prove the upstream build works on this host
-in a Bazel-like environment, and harvest the facts the Bazel build needs:
+Do not reject a candidate just because this VM is missing the native toolchain
+(`rustc`, `go`, `qmake`, `pkg-config`, autotools, node, ...). Prefer pinned
+Bazel-provided tools when a maintained ruleset exists:
+
+- Rust/Cargo: `rules_rust` + `crate_universe`, with the Rust toolchain and
+  crate index fetched during Bazel's fetch phase.
+- Go modules: `rules_go`/Gazelle, with the Go SDK and module deps pinned by
+  Bazel.
+- CMake/qmake/node-like build steps: use a documented Bazel ruleset or a
+  small repo-specific wrapper that runs a pinned tool fetched as an external
+  repository.
+
+Missing host tools are still useful signal for the **legacy** side: either
+teach the legacy wrapper to use the same pinned toolchain, or document and tag
+that target as requiring an extra host tool. They are not a reason to fall back
+to already-Bazel repos.
+
+Pick the smallest repo that exercises one new generic capability. For example,
+the first Cargo onboarding should prove "pinned Cargo workspace to Bazel binary
+plus parity" before taking on a project that also needs a web asset pipeline,
+code generators, or multiple platform-specific native libraries.
+
+## 0.5. Scout outside Bazel first (cheap iteration)
+
+Before writing any BUILD file, prove the upstream build invocation and tests in
+a cheap scratch tree, and harvest the facts the Bazel build needs. When the
+toolchain is host-provided, run it in a Bazel-like environment:
 
 ```sh
 curl -LO <release tarball> && tar xzf ... -C /tmp/trial   # same artifact you'll pin
 cd /tmp/trial
 env -i PATH=/usr/bin:/bin HOME=/tmp make <upstream args>  # scrubbed env ≈ sandbox
 ```
+
+When the toolchain will be Bazel-provided, do not spend time installing host
+tools just for scouting. Instead, identify the upstream source of truth
+(`Cargo.toml`/`Cargo.lock`, `go.mod`/`go.sum`, `CMakeLists.txt`, etc.) and make
+the first Bazel milestone a query/build that proves the external ruleset can
+load that metadata from the pinned archive.
 
 - If this fails, fix the invocation (or the wrapper) here, not through slow
   genrule iterations.
@@ -73,6 +104,11 @@ env -i PATH=/usr/bin:/bin HOME=/tmp make <upstream args>  # scrubbed env ≈ san
   legacy build's verbose output (`make V=1`) rather than guessing.
 - New rulesets are ordinary `bazel_dep`s in `MODULE.bazel` (the lockfile
   pins them; actions still run without network).
+- Register language toolchains in `MODULE.bazel` instead of assuming host
+  installations. If a module extension needs upstream metadata from an external
+  archive, remember that every label it reads must be in a Bazel package; add
+  package-marker `BUILD.bazel` files where needed rather than moving metadata
+  into ad hoc local copies.
 - Finer-grained internal targets encouraged; the public names are aliases.
 
 ## 5. Same suite against the Bazel binary (`bazel_test`)

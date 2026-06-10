@@ -1,0 +1,5 @@
+# Daemon-free rmux cases. Lines are whitespace-split by tools/parity.
+-V
+list-commands
+list-keys
+display-message -p version

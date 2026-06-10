@@ -11,9 +11,1463 @@ module(
 )
 
 bazel_dep(name = "rules_cc", version = "0.2.17")
+bazel_dep(name = "rules_rust", version = "0.70.0")
 bazel_dep(name = "rules_shell", version = "0.6.1")
 
 http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
+rust.toolchain(
+    edition = "2021",
+    versions = ["1.88.0"],
+)
+use_repo(
+    rust,
+    "rust_linux_x86_64__x86_64-unknown-linux-gnu__stable_tools",
+    "rust_toolchains",
+)
+register_toolchains("@rust_toolchains//:all")
+
+crate = use_extension("@rules_rust//crate_universe:extensions.bzl", "crate")
+crate.annotation(
+    crate = "aead",
+    version = "0.5.2",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "aho-corasick",
+    version = "1.1.4",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "allocator-api2",
+    version = "0.2.21",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "android_system_properties",
+    version = "0.1.5",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "anstream",
+    version = "0.6.21",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "anstyle",
+    version = "1.0.14",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "anstyle-parse",
+    version = "0.2.7",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "anstyle-query",
+    version = "1.1.5",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "anstyle-wincon",
+    version = "3.0.11",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "anyhow",
+    version = "1.0.102",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "async-recursion",
+    version = "1.1.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "autocfg",
+    version = "1.5.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "base64",
+    version = "0.22.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "bincode",
+    version = "1.3.3",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "bitflags",
+    version = "2.11.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "block-buffer",
+    version = "0.10.4",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "bumpalo",
+    version = "3.20.2",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "bytes",
+    version = "1.11.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "cassowary",
+    version = "0.3.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "castaway",
+    version = "0.2.4",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "cc",
+    version = "1.2.60",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "cfg-if",
+    version = "1.0.4",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "chacha20",
+    version = "0.10.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "chacha20",
+    version = "0.9.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "chacha20poly1305",
+    version = "0.10.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "chrono",
+    version = "0.4.44",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "cipher",
+    version = "0.4.4",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "clap",
+    version = "4.5.39",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "clap_builder",
+    version = "4.5.39",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "clap_derive",
+    version = "4.5.32",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "clap_lex",
+    version = "0.7.7",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "colorchoice",
+    version = "1.0.5",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "compact_str",
+    version = "0.8.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "core-foundation-sys",
+    version = "0.8.7",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "core-models",
+    version = "0.0.6",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "cpufeatures",
+    version = "0.2.17",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "cpufeatures",
+    version = "0.3.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "crossterm",
+    version = "0.29.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "crossterm_winapi",
+    version = "0.9.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "crypto-common",
+    version = "0.1.7",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "curve25519-dalek",
+    version = "4.1.3",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "curve25519-dalek-derive",
+    version = "0.1.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "darling",
+    version = "0.20.11",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "darling_core",
+    version = "0.20.11",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "darling_macro",
+    version = "0.20.11",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "digest",
+    version = "0.10.7",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "document-features",
+    version = "0.2.12",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "either",
+    version = "1.15.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "embed-manifest",
+    version = "1.4.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "equivalent",
+    version = "1.0.2",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "errno",
+    version = "0.3.14",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "fiat-crypto",
+    version = "0.2.9",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "find-msvc-tools",
+    version = "0.1.9",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "fnv",
+    version = "1.0.7",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "foldhash",
+    version = "0.1.5",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "generic-array",
+    version = "0.14.7",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "getrandom",
+    version = "0.2.17",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "getrandom",
+    version = "0.3.4",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "getrandom",
+    version = "0.4.2",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "glob",
+    version = "0.3.3",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "hashbrown",
+    version = "0.15.5",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "hashbrown",
+    version = "0.17.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "hax-lib",
+    version = "0.3.6",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "hax-lib-macros",
+    version = "0.3.6",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "hax-lib-macros-types",
+    version = "0.3.6",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "heck",
+    version = "0.5.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "hex-literal",
+    version = "0.4.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "hkdf",
+    version = "0.12.4",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "hmac",
+    version = "0.12.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "httparse",
+    version = "1.10.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "iana-time-zone",
+    version = "0.1.65",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "iana-time-zone-haiku",
+    version = "0.1.2",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "id-arena",
+    version = "2.3.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "ident_case",
+    version = "1.0.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "indexmap",
+    version = "2.14.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "indoc",
+    version = "2.0.7",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "inout",
+    version = "0.1.4",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "instability",
+    version = "0.3.6",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "is_terminal_polyfill",
+    version = "1.70.2",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "itertools",
+    version = "0.13.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "itoa",
+    version = "1.0.18",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "js-sys",
+    version = "0.3.95",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "leb128fmt",
+    version = "0.1.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "libc",
+    version = "0.2.185",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "libcrux-intrinsics",
+    version = "0.0.7",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "libcrux-ml-kem",
+    version = "0.0.9",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "libcrux-platform",
+    version = "0.0.3",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "libcrux-secrets",
+    version = "0.0.5",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "libcrux-sha3",
+    version = "0.0.9",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "libcrux-traits",
+    version = "0.0.7",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "linux-raw-sys",
+    version = "0.12.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "litrs",
+    version = "1.0.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "lock_api",
+    version = "0.4.14",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "log",
+    version = "0.4.29",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "lru",
+    version = "0.12.5",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "memchr",
+    version = "2.8.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "mio",
+    version = "1.2.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "num-bigint",
+    version = "0.4.6",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "num-integer",
+    version = "0.1.46",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "num-traits",
+    version = "0.2.19",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "once_cell",
+    version = "1.21.4",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "once_cell_polyfill",
+    version = "1.70.2",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "opaque-debug",
+    version = "0.3.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "parking_lot",
+    version = "0.12.5",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "parking_lot_core",
+    version = "0.9.12",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "paste",
+    version = "1.0.15",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "pastey",
+    version = "0.2.3",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "pin-project-lite",
+    version = "0.2.17",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "poly1305",
+    version = "0.8.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "prettyplease",
+    version = "0.2.37",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "proc-macro-error-attr2",
+    version = "2.0.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "proc-macro-error2",
+    version = "2.0.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "proc-macro2",
+    version = "1.0.106",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "qrcode",
+    version = "0.14.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "quote",
+    version = "1.0.45",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "r-efi",
+    version = "5.3.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "r-efi",
+    version = "6.0.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "rand",
+    version = "0.10.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "rand_core",
+    version = "0.10.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "rand_core",
+    version = "0.6.4",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "ratatui",
+    version = "0.29.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "redox_syscall",
+    version = "0.5.18",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "regex",
+    version = "1.12.3",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "regex-automata",
+    version = "0.4.14",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "regex-syntax",
+    version = "0.8.10",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "rustc_version",
+    version = "0.4.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "rustix",
+    version = "1.1.4",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "rustversion",
+    version = "1.0.22",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "ryu",
+    version = "1.0.23",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "scopeguard",
+    version = "1.2.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "semver",
+    version = "1.0.28",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "serde",
+    version = "1.0.228",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "serde_core",
+    version = "1.0.228",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "serde_derive",
+    version = "1.0.228",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "serde_json",
+    version = "1.0.149",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "serde_spanned",
+    version = "0.6.9",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "sha1",
+    version = "0.10.6",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "sha2",
+    version = "0.10.9",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "shlex",
+    version = "1.3.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "signal-hook",
+    version = "0.3.18",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "signal-hook-mio",
+    version = "0.2.5",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "signal-hook-registry",
+    version = "1.4.8",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "smallvec",
+    version = "1.15.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "socket2",
+    version = "0.6.3",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "static_assertions",
+    version = "1.1.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "strsim",
+    version = "0.11.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "strum",
+    version = "0.26.3",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "strum_macros",
+    version = "0.26.4",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "subtle",
+    version = "2.6.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "syn",
+    version = "2.0.117",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "thiserror",
+    version = "2.0.18",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "thiserror-impl",
+    version = "2.0.18",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "tokio",
+    version = "1.52.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "tokio-macros",
+    version = "2.7.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "toml",
+    version = "0.8.23",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "toml_datetime",
+    version = "0.6.11",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "toml_edit",
+    version = "0.22.27",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "toml_write",
+    version = "0.1.2",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "tracing",
+    version = "0.1.44",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "tracing-attributes",
+    version = "0.1.31",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "tracing-core",
+    version = "0.1.36",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "typenum",
+    version = "1.20.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "unicode-ident",
+    version = "1.0.24",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "unicode-segmentation",
+    version = "1.12.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "unicode-truncate",
+    version = "1.1.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "unicode-width",
+    version = "0.1.14",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "unicode-width",
+    version = "0.2.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "unicode-xid",
+    version = "0.2.6",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "universal-hash",
+    version = "0.5.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "utf8parse",
+    version = "0.2.2",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "uuid",
+    version = "1.23.2",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "version_check",
+    version = "0.9.5",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "wasi",
+    version = "0.11.1-wasi-snapshot-preview1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "wasip2",
+    version = "1.0.3-wasi-0.2.9",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "wasip3",
+    version = "0.4.0-wasi-0.3.0-rc-2026-01-06",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "wasm-bindgen",
+    version = "0.2.118",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "wasm-bindgen-macro",
+    version = "0.2.118",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "wasm-bindgen-macro-support",
+    version = "0.2.118",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "wasm-bindgen-shared",
+    version = "0.2.118",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "wasm-encoder",
+    version = "0.244.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "wasm-metadata",
+    version = "0.244.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "wasmparser",
+    version = "0.244.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "winapi",
+    version = "0.3.9",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "winapi-i686-pc-windows-gnu",
+    version = "0.4.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "winapi-x86_64-pc-windows-gnu",
+    version = "0.4.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "windows-core",
+    version = "0.62.2",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "windows-implement",
+    version = "0.60.2",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "windows-interface",
+    version = "0.59.3",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "windows-link",
+    version = "0.2.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "windows-result",
+    version = "0.4.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "windows-strings",
+    version = "0.5.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "windows-sys",
+    version = "0.61.2",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "winnow",
+    version = "0.7.15",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "wit-bindgen",
+    version = "0.51.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "wit-bindgen",
+    version = "0.57.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "wit-bindgen-core",
+    version = "0.51.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "wit-bindgen-rust",
+    version = "0.51.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "wit-bindgen-rust-macro",
+    version = "0.51.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "wit-component",
+    version = "0.244.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "wit-parser",
+    version = "0.244.0",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "x25519-dalek",
+    version = "2.0.1",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "zeroize",
+    version = "1.8.2",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "zeroize_derive",
+    version = "1.4.3",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.annotation(
+    crate = "zmij",
+    version = "1.0.21",
+    additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
+    repositories = ["rmux_crates"],
+)
+crate.from_cargo(
+    name = "rmux_crates",
+    cargo_lockfile = "@rmux_src//:Cargo.lock",
+    generate_binaries = True,
+    manifests = ["@rmux_src//:Cargo.toml"],
+    supported_platform_triples = ["x86_64-unknown-linux-gnu"],
+)
+use_repo(
+    crate,
+    "rmux_crates",
+    "rmux_crates__aead-0.5.2",
+    "rmux_crates__aho-corasick-1.1.4",
+    "rmux_crates__allocator-api2-0.2.21",
+    "rmux_crates__android_system_properties-0.1.5",
+    "rmux_crates__anstream-0.6.21",
+    "rmux_crates__anstyle-1.0.14",
+    "rmux_crates__anstyle-parse-0.2.7",
+    "rmux_crates__anstyle-query-1.1.5",
+    "rmux_crates__anstyle-wincon-3.0.11",
+    "rmux_crates__anyhow-1.0.102",
+    "rmux_crates__async-recursion-1.1.1",
+    "rmux_crates__autocfg-1.5.0",
+    "rmux_crates__base64-0.22.1",
+    "rmux_crates__bincode-1.3.3",
+    "rmux_crates__bitflags-2.11.1",
+    "rmux_crates__block-buffer-0.10.4",
+    "rmux_crates__bumpalo-3.20.2",
+    "rmux_crates__bytes-1.11.1",
+    "rmux_crates__cassowary-0.3.0",
+    "rmux_crates__castaway-0.2.4",
+    "rmux_crates__cc-1.2.60",
+    "rmux_crates__cfg-if-1.0.4",
+    "rmux_crates__chacha20-0.10.0",
+    "rmux_crates__chacha20-0.9.1",
+    "rmux_crates__chacha20poly1305-0.10.1",
+    "rmux_crates__chrono-0.4.44",
+    "rmux_crates__cipher-0.4.4",
+    "rmux_crates__clap-4.5.39",
+    "rmux_crates__clap_builder-4.5.39",
+    "rmux_crates__clap_derive-4.5.32",
+    "rmux_crates__clap_lex-0.7.7",
+    "rmux_crates__colorchoice-1.0.5",
+    "rmux_crates__compact_str-0.8.1",
+    "rmux_crates__core-foundation-sys-0.8.7",
+    "rmux_crates__core-models-0.0.6",
+    "rmux_crates__cpufeatures-0.2.17",
+    "rmux_crates__cpufeatures-0.3.0",
+    "rmux_crates__crossterm-0.29.0",
+    "rmux_crates__crossterm_winapi-0.9.1",
+    "rmux_crates__crypto-common-0.1.7",
+    "rmux_crates__curve25519-dalek-4.1.3",
+    "rmux_crates__curve25519-dalek-derive-0.1.1",
+    "rmux_crates__darling-0.20.11",
+    "rmux_crates__darling_core-0.20.11",
+    "rmux_crates__darling_macro-0.20.11",
+    "rmux_crates__digest-0.10.7",
+    "rmux_crates__document-features-0.2.12",
+    "rmux_crates__either-1.15.0",
+    "rmux_crates__embed-manifest-1.4.0",
+    "rmux_crates__equivalent-1.0.2",
+    "rmux_crates__errno-0.3.14",
+    "rmux_crates__fiat-crypto-0.2.9",
+    "rmux_crates__find-msvc-tools-0.1.9",
+    "rmux_crates__fnv-1.0.7",
+    "rmux_crates__foldhash-0.1.5",
+    "rmux_crates__generic-array-0.14.7",
+    "rmux_crates__getrandom-0.2.17",
+    "rmux_crates__getrandom-0.3.4",
+    "rmux_crates__getrandom-0.4.2",
+    "rmux_crates__glob-0.3.3",
+    "rmux_crates__hashbrown-0.15.5",
+    "rmux_crates__hashbrown-0.17.1",
+    "rmux_crates__hax-lib-0.3.6",
+    "rmux_crates__hax-lib-macros-0.3.6",
+    "rmux_crates__hax-lib-macros-types-0.3.6",
+    "rmux_crates__heck-0.5.0",
+    "rmux_crates__hex-literal-0.4.1",
+    "rmux_crates__hkdf-0.12.4",
+    "rmux_crates__hmac-0.12.1",
+    "rmux_crates__httparse-1.10.1",
+    "rmux_crates__iana-time-zone-0.1.65",
+    "rmux_crates__iana-time-zone-haiku-0.1.2",
+    "rmux_crates__id-arena-2.3.0",
+    "rmux_crates__ident_case-1.0.1",
+    "rmux_crates__indexmap-2.14.0",
+    "rmux_crates__indoc-2.0.7",
+    "rmux_crates__inout-0.1.4",
+    "rmux_crates__instability-0.3.6",
+    "rmux_crates__is_terminal_polyfill-1.70.2",
+    "rmux_crates__itertools-0.13.0",
+    "rmux_crates__itoa-1.0.18",
+    "rmux_crates__js-sys-0.3.95",
+    "rmux_crates__leb128fmt-0.1.0",
+    "rmux_crates__libc-0.2.185",
+    "rmux_crates__libcrux-intrinsics-0.0.7",
+    "rmux_crates__libcrux-ml-kem-0.0.9",
+    "rmux_crates__libcrux-platform-0.0.3",
+    "rmux_crates__libcrux-secrets-0.0.5",
+    "rmux_crates__libcrux-sha3-0.0.9",
+    "rmux_crates__libcrux-traits-0.0.7",
+    "rmux_crates__linux-raw-sys-0.12.1",
+    "rmux_crates__litrs-1.0.0",
+    "rmux_crates__lock_api-0.4.14",
+    "rmux_crates__log-0.4.29",
+    "rmux_crates__lru-0.12.5",
+    "rmux_crates__memchr-2.8.0",
+    "rmux_crates__mio-1.2.0",
+    "rmux_crates__num-bigint-0.4.6",
+    "rmux_crates__num-integer-0.1.46",
+    "rmux_crates__num-traits-0.2.19",
+    "rmux_crates__once_cell-1.21.4",
+    "rmux_crates__once_cell_polyfill-1.70.2",
+    "rmux_crates__opaque-debug-0.3.1",
+    "rmux_crates__parking_lot-0.12.5",
+    "rmux_crates__parking_lot_core-0.9.12",
+    "rmux_crates__paste-1.0.15",
+    "rmux_crates__pastey-0.2.3",
+    "rmux_crates__pin-project-lite-0.2.17",
+    "rmux_crates__poly1305-0.8.0",
+    "rmux_crates__prettyplease-0.2.37",
+    "rmux_crates__proc-macro-error-attr2-2.0.0",
+    "rmux_crates__proc-macro-error2-2.0.1",
+    "rmux_crates__proc-macro2-1.0.106",
+    "rmux_crates__qrcode-0.14.1",
+    "rmux_crates__quote-1.0.45",
+    "rmux_crates__r-efi-5.3.0",
+    "rmux_crates__r-efi-6.0.0",
+    "rmux_crates__rand-0.10.1",
+    "rmux_crates__rand_core-0.10.1",
+    "rmux_crates__rand_core-0.6.4",
+    "rmux_crates__ratatui-0.29.0",
+    "rmux_crates__redox_syscall-0.5.18",
+    "rmux_crates__regex-1.12.3",
+    "rmux_crates__regex-automata-0.4.14",
+    "rmux_crates__regex-syntax-0.8.10",
+    "rmux_crates__rustc_version-0.4.1",
+    "rmux_crates__rustix-1.1.4",
+    "rmux_crates__rustversion-1.0.22",
+    "rmux_crates__ryu-1.0.23",
+    "rmux_crates__scopeguard-1.2.0",
+    "rmux_crates__semver-1.0.28",
+    "rmux_crates__serde-1.0.228",
+    "rmux_crates__serde_core-1.0.228",
+    "rmux_crates__serde_derive-1.0.228",
+    "rmux_crates__serde_json-1.0.149",
+    "rmux_crates__serde_spanned-0.6.9",
+    "rmux_crates__sha1-0.10.6",
+    "rmux_crates__sha2-0.10.9",
+    "rmux_crates__shlex-1.3.0",
+    "rmux_crates__signal-hook-0.3.18",
+    "rmux_crates__signal-hook-mio-0.2.5",
+    "rmux_crates__signal-hook-registry-1.4.8",
+    "rmux_crates__smallvec-1.15.1",
+    "rmux_crates__socket2-0.6.3",
+    "rmux_crates__static_assertions-1.1.0",
+    "rmux_crates__strsim-0.11.1",
+    "rmux_crates__strum-0.26.3",
+    "rmux_crates__strum_macros-0.26.4",
+    "rmux_crates__subtle-2.6.1",
+    "rmux_crates__syn-2.0.117",
+    "rmux_crates__thiserror-2.0.18",
+    "rmux_crates__thiserror-impl-2.0.18",
+    "rmux_crates__tokio-1.52.1",
+    "rmux_crates__tokio-macros-2.7.0",
+    "rmux_crates__toml-0.8.23",
+    "rmux_crates__toml_datetime-0.6.11",
+    "rmux_crates__toml_edit-0.22.27",
+    "rmux_crates__toml_write-0.1.2",
+    "rmux_crates__tracing-0.1.44",
+    "rmux_crates__tracing-attributes-0.1.31",
+    "rmux_crates__tracing-core-0.1.36",
+    "rmux_crates__typenum-1.20.0",
+    "rmux_crates__unicode-ident-1.0.24",
+    "rmux_crates__unicode-segmentation-1.12.0",
+    "rmux_crates__unicode-truncate-1.1.0",
+    "rmux_crates__unicode-width-0.1.14",
+    "rmux_crates__unicode-width-0.2.0",
+    "rmux_crates__unicode-xid-0.2.6",
+    "rmux_crates__universal-hash-0.5.1",
+    "rmux_crates__utf8parse-0.2.2",
+    "rmux_crates__uuid-1.23.2",
+    "rmux_crates__version_check-0.9.5",
+    "rmux_crates__wasi-0.11.1-wasi-snapshot-preview1",
+    "rmux_crates__wasip2-1.0.3-wasi-0.2.9",
+    "rmux_crates__wasip3-0.4.0-wasi-0.3.0-rc-2026-01-06",
+    "rmux_crates__wasm-bindgen-0.2.118",
+    "rmux_crates__wasm-bindgen-macro-0.2.118",
+    "rmux_crates__wasm-bindgen-macro-support-0.2.118",
+    "rmux_crates__wasm-bindgen-shared-0.2.118",
+    "rmux_crates__wasm-encoder-0.244.0",
+    "rmux_crates__wasm-metadata-0.244.0",
+    "rmux_crates__wasmparser-0.244.0",
+    "rmux_crates__winapi-0.3.9",
+    "rmux_crates__winapi-i686-pc-windows-gnu-0.4.0",
+    "rmux_crates__winapi-x86_64-pc-windows-gnu-0.4.0",
+    "rmux_crates__windows-core-0.62.2",
+    "rmux_crates__windows-implement-0.60.2",
+    "rmux_crates__windows-interface-0.59.3",
+    "rmux_crates__windows-link-0.2.1",
+    "rmux_crates__windows-result-0.4.1",
+    "rmux_crates__windows-strings-0.5.1",
+    "rmux_crates__windows-sys-0.61.2",
+    "rmux_crates__winnow-0.7.15",
+    "rmux_crates__wit-bindgen-0.51.0",
+    "rmux_crates__wit-bindgen-0.57.1",
+    "rmux_crates__wit-bindgen-core-0.51.0",
+    "rmux_crates__wit-bindgen-rust-0.51.0",
+    "rmux_crates__wit-bindgen-rust-macro-0.51.0",
+    "rmux_crates__wit-component-0.244.0",
+    "rmux_crates__wit-parser-0.244.0",
+    "rmux_crates__x25519-dalek-2.0.1",
+    "rmux_crates__zeroize-1.8.2",
+    "rmux_crates__zeroize_derive-1.4.3",
+    "rmux_crates__zmij-1.0.21",
+)
 
 # Upstream sources of onboarded repos. Each entry is mirrored by a
 # <repo>/UPSTREAM file recording version/url/sha256/license rationale.
@@ -23,4 +1477,12 @@ http_archive(
     sha256 = "72c081e3b8cfae7144273d26d76736f08319000af46c01515cad5d29765cead5",
     strip_prefix = "redis-7.2.7",
     urls = ["https://download.redis.io/releases/redis-7.2.7.tar.gz"],
+)
+
+http_archive(
+    name = "rmux_src",
+    build_file = "//rmux:rmux.BUILD.bazel",
+    sha256 = "89a07c4f42320a36176ead9d798ec5f486f530cdbec877533387518a463b4c40",
+    strip_prefix = "rmux-0.5.0",
+    urls = ["https://github.com/helvesec/rmux/archive/refs/tags/v0.5.0.tar.gz"],
 )

@@ -1,0 +1,14 @@
+Project: rmux
+Repository: https://github.com/helvesec/rmux
+Version: 0.5.0
+Source archive: https://github.com/helvesec/rmux/archive/refs/tags/v0.5.0.tar.gz
+Archive sha256: 89a07c4f42320a36176ead9d798ec5f486f530cdbec877533387518a463b4c40
+Date pinned: 2026-06-09
+License: MIT OR Apache-2.0
+
+Rationale:
+rmux is a small-enough Cargo workspace from the candidate list to exercise the
+first Rust/Cargo onboarding without also needing a Node, WASM, or system C
+library pipeline. The first Bazel port intentionally builds the terminal
+binary with Cargo's `--no-default-features`, matching a Bazel-native build that
+does not enable rmux's optional web-share crypto feature.

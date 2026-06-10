@@ -1,0 +1,229 @@
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
+load("@rmux_crates//:defs.bzl", "aliases", "all_crate_deps")
+
+filegroup(
+    name = "tree",
+    srcs = glob(["**"]),
+    visibility = ["//visibility:public"],
+)
+
+exports_files(["Cargo.toml"])
+
+rust_library(
+    name = "rmux_types",
+    srcs = glob(["crates/rmux-types/src/**/*.rs"]),
+    crate_features = ["serde"],
+    crate_name = "rmux_types",
+    crate_root = "crates/rmux-types/src/lib.rs",
+    edition = "2021",
+    proc_macro_deps = all_crate_deps(
+        package_name = "crates/rmux-types",
+        proc_macro = True,
+    ),
+    rustc_env = {
+        "CARGO_PKG_NAME": "rmux-types",
+        "CARGO_PKG_VERSION": "0.5.0",
+    },
+    deps = all_crate_deps(
+        package_name = "crates/rmux-types",
+        normal = True,
+    ),
+)
+
+rust_library(
+    name = "rmux_proto",
+    srcs = glob(["crates/rmux-proto/src/**/*.rs"]),
+    crate_name = "rmux_proto",
+    crate_root = "crates/rmux-proto/src/lib.rs",
+    edition = "2021",
+    proc_macro_deps = all_crate_deps(
+        package_name = "crates/rmux-proto",
+        proc_macro = True,
+    ),
+    rustc_env = {
+        "CARGO_PKG_NAME": "rmux-proto",
+        "CARGO_PKG_VERSION": "0.5.0",
+    },
+    deps = [
+        ":rmux_types",
+    ] + all_crate_deps(
+        package_name = "crates/rmux-proto",
+        normal = True,
+    ),
+)
+
+rust_library(
+    name = "rmux_os",
+    srcs = glob(["crates/rmux-os/src/**/*.rs"]),
+    crate_name = "rmux_os",
+    crate_root = "crates/rmux-os/src/lib.rs",
+    edition = "2021",
+    rustc_env = {
+        "CARGO_PKG_NAME": "rmux-os",
+        "CARGO_PKG_VERSION": "0.5.0",
+    },
+    deps = [
+        ":rmux_types",
+    ] + all_crate_deps(
+        package_name = "crates/rmux-os",
+        normal = True,
+    ),
+)
+
+rust_library(
+    name = "rmux_ipc",
+    srcs = glob(["crates/rmux-ipc/src/**/*.rs"]),
+    crate_name = "rmux_ipc",
+    crate_root = "crates/rmux-ipc/src/lib.rs",
+    edition = "2021",
+    rustc_env = {
+        "CARGO_PKG_NAME": "rmux-ipc",
+        "CARGO_PKG_VERSION": "0.5.0",
+    },
+    deps = [
+        ":rmux_os",
+    ] + all_crate_deps(
+        package_name = "crates/rmux-ipc",
+        normal = True,
+    ),
+)
+
+rust_library(
+    name = "rmux_core",
+    srcs = glob(["crates/rmux-core/src/**/*.rs"]),
+    compile_data = glob(["crates/rmux-core/src/**/*.txt"]),
+    crate_name = "rmux_core",
+    crate_root = "crates/rmux-core/src/lib.rs",
+    edition = "2021",
+    rustc_env = {
+        "CARGO_PKG_NAME": "rmux-core",
+        "CARGO_PKG_VERSION": "0.5.0",
+    },
+    deps = [
+        ":rmux_proto",
+    ] + all_crate_deps(
+        package_name = "crates/rmux-core",
+        normal = True,
+    ),
+)
+
+rust_library(
+    name = "rmux_pty",
+    srcs = glob(["crates/rmux-pty/src/**/*.rs"]),
+    crate_name = "rmux_pty",
+    crate_root = "crates/rmux-pty/src/lib.rs",
+    edition = "2021",
+    rustc_env = {
+        "CARGO_PKG_NAME": "rmux-pty",
+        "CARGO_PKG_VERSION": "0.5.0",
+    },
+    deps = [
+        ":rmux_os",
+        ":rmux_types",
+    ] + all_crate_deps(
+        package_name = "crates/rmux-pty",
+        normal = True,
+    ),
+)
+
+rust_library(
+    name = "rmux_sdk",
+    srcs = glob(["crates/rmux-sdk/src/**/*.rs"]),
+    crate_name = "rmux_sdk",
+    crate_root = "crates/rmux-sdk/src/lib.rs",
+    edition = "2021",
+    proc_macro_deps = all_crate_deps(
+        package_name = "crates/rmux-sdk",
+        proc_macro = True,
+    ),
+    rustc_env = {
+        "CARGO_PKG_NAME": "rmux-sdk",
+        "CARGO_PKG_VERSION": "0.5.0",
+    },
+    deps = [
+        ":rmux_ipc",
+        ":rmux_os",
+        ":rmux_proto",
+    ] + all_crate_deps(
+        package_name = "crates/rmux-sdk",
+        normal = True,
+    ),
+)
+
+rust_library(
+    name = "rmux_client",
+    srcs = glob(["crates/rmux-client/src/**/*.rs"]),
+    crate_name = "rmux_client",
+    crate_root = "crates/rmux-client/src/lib.rs",
+    edition = "2021",
+    rustc_env = {
+        "CARGO_PKG_NAME": "rmux-client",
+        "CARGO_PKG_VERSION": "0.5.0",
+    },
+    deps = [
+        ":rmux_core",
+        ":rmux_ipc",
+        ":rmux_os",
+        ":rmux_proto",
+        ":rmux_sdk",
+    ] + all_crate_deps(
+        package_name = "crates/rmux-client",
+        normal = True,
+    ),
+)
+
+rust_library(
+    name = "rmux_server",
+    srcs = glob(["crates/rmux-server/src/**/*.rs"]),
+    crate_name = "rmux_server",
+    crate_root = "crates/rmux-server/src/lib.rs",
+    edition = "2021",
+    proc_macro_deps = all_crate_deps(
+        package_name = "crates/rmux-server",
+        proc_macro = True,
+    ),
+    rustc_env = {
+        "CARGO_PKG_NAME": "rmux-server",
+        "CARGO_PKG_VERSION": "0.5.0",
+    },
+    deps = [
+        ":rmux_core",
+        ":rmux_ipc",
+        ":rmux_os",
+        ":rmux_proto",
+        ":rmux_pty",
+    ] + all_crate_deps(
+        package_name = "crates/rmux-server",
+        normal = True,
+    ),
+)
+
+rust_binary(
+    name = "rmux",
+    srcs = glob(["src/**/*.rs"]),
+    compile_data = ["resources/windows/rmux.exe.manifest"],
+    aliases = aliases(package_name = ""),
+    crate_name = "rmux",
+    crate_root = "src/main.rs",
+    edition = "2021",
+    proc_macro_deps = all_crate_deps(
+        package_name = "",
+        proc_macro = True,
+    ),
+    rustc_env = {
+        "CARGO_BIN_NAME": "rmux",
+        "CARGO_PKG_NAME": "rmux",
+        "CARGO_PKG_VERSION": "0.5.0",
+    },
+    visibility = ["//visibility:public"],
+    deps = [
+        ":rmux_client",
+        ":rmux_core",
+        ":rmux_os",
+        ":rmux_proto",
+        ":rmux_server",
+    ] + all_crate_deps(
+        package_name = "",
+        normal = True,
+    ),
+)
