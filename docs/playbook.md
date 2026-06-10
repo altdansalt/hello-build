@@ -251,3 +251,11 @@ Use this path for Cargo workspaces (ADR 0007):
 table row is honest about coverage and gaps. The disk cache in `.bazelrc`
 keeps the expunge run cheap by replaying unchanged results (ADR 0013);
 iterate with plain incremental `bazel test //...`.
+
+A change to `tools/` or `MODULE.bazel` must also pass the
+standalone-consumer check (ADR 0019) — the tooling is a module other
+workspaces depend on:
+
+```sh
+(cd consumers/hello-standalone && bazel test //...)
+```

@@ -44,7 +44,8 @@ def upstream_inventory_test(
     py_test(
         name = name,
         size = kwargs.pop("size", "small"),
-        srcs = ["//tools/audit:upstream_inventory.py"],
+        # Label(): resolve in this module, not the caller's repo (ADR 0019).
+        srcs = [Label("//tools/audit:upstream_inventory.py")],
         args = args,
         data = data,
         main = "upstream_inventory.py",

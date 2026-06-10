@@ -91,8 +91,8 @@ toward:
   parity suite.
 
 What is *not* a target: a self-serve `port <git-url>` tool for arbitrary
-repos. The compiler's user interface is this repo — the playbook plus an
-agent (ADR 0018).
+repos. The compiler's user interface is the published skill plus an
+agent, backed by the `hello_build` tooling module (ADRs 0018, 0019).
 
 ## What this means for an onboarding agent: nothing new
 

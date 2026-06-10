@@ -1,0 +1,20 @@
+"""The forcing function for ADR 0019: a standalone workspace that consumes
+hello_build as an external module and re-ports the toy upstream using only
+@hello_build//tools/... macros. Every monorepo assumption in the tooling
+breaks here first. Fleet ports follow this MODULE.bazel shape, with
+git_override pinned to a hello-build commit instead of local_path_override.
+"""
+
+module(
+    name = "hello_standalone",
+    version = "0.1.0",
+)
+
+bazel_dep(name = "hello_build", version = "0.1.0")
+local_path_override(
+    module_name = "hello_build",
+    path = "../..",
+)
+
+bazel_dep(name = "rules_cc", version = "0.2.17")
+bazel_dep(name = "rules_shell", version = "0.6.1")

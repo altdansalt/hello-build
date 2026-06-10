@@ -56,6 +56,12 @@ The repo documents itself: read these before changing anything.
   in .bazelrc keeps this fast by replaying unchanged results — ADR 0013;
   use incremental `bazel test //...` while iterating, and delete
   `~/.cache/hello-build/disk-cache` only for a true cold run.)
+- **The tooling is a module others depend on** (ADR 0019): a change to
+  `tools/` or `MODULE.bazel` must also pass
+  `(cd consumers/hello-standalone && bazel test //...)`. In `tools/*.bzl`
+  macros, wrap internal labels in `Label()` (string labels resolve in the
+  *caller's* repo) and never reference extension-generated repos by name
+  from MODULE.bazel when the name is root-context-dependent.
 - Test scripts referenced by `sh_test(srcs=...)` must be `chmod +x`.
 
 ## Hard-won gotchas (cost real debugging time; don't rediscover them)

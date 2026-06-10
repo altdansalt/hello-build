@@ -17,7 +17,7 @@ def legacy_cargo(
         out_files = [],
         cargo_args = [],
         rust_tools_repo = "@rust_linux_x86_64__x86_64-unknown-linux-gnu__stable_tools",
-        checksum_tool = "//tools/cargo:synthesize_vendor_checksums",
+        checksum_tool = Label("//tools/cargo:synthesize_vendor_checksums"),
         visibility = None):
     """Runs an upstream Cargo build offline in a Bazel action.
 
@@ -138,7 +138,7 @@ def legacy_cargo_test(
         cargo_args = ["test", "--locked", "--offline"],
         skip_tests = [],
         rust_tools_repo = "@rust_linux_x86_64__x86_64-unknown-linux-gnu__stable_tools",
-        checksum_tool = "//tools/cargo:synthesize_vendor_checksums",
+        checksum_tool = Label("//tools/cargo:synthesize_vendor_checksums"),
         env = {},
         **kwargs):
     """Runs an upstream `cargo test` suite offline as a Bazel test.
@@ -197,7 +197,7 @@ def legacy_cargo_test(
 
     sh_test(
         name = name,
-        srcs = ["//tools/cargo:run_cargo_test.sh"],
+        srcs = [Label("//tools/cargo:run_cargo_test.sh")],
         args = args,
         data = [cargo_toml, cargo_lock] + list(srcs) + vendor_srcs + [
             ":%s_vendor_manifest" % name,

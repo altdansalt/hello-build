@@ -1,12 +1,19 @@
 """Helpers for running upstream Go builds inside Bazel actions."""
 
+load("@go_host_compatible_sdk_label//:defs.bzl", "HOST_COMPATIBLE_SDK")
+
+# The pinned SDK (go_sdk.download in MODULE.bazel), reached through rules_go's
+# stable indirection repo: the SDK repo's generated name differs between root
+# and dependency contexts, so it must never be referenced by name (ADR 0019).
+_GO_BIN = str(Label("@@{}//:bin/go".format(HOST_COMPATIBLE_SDK.repo_name)))
+
 def legacy_go_binary(
         name,
         srcs,
         go_mod,
         package,
         out_binary,
-        go_sdk_repo = "@go_1_26_4_sdk",
+        go_bin = None,
         go_args = [],
         visibility = None):
     """Runs `go build` for an upstream package with a pinned Bazel Go SDK.
@@ -14,6 +21,7 @@ def legacy_go_binary(
     The action copies the upstream module to a writable scratch directory,
     disables module downloads, and extracts the declared binary.
     """
+    go_bin = go_bin or _GO_BIN
     native.genrule(
         name = name,
         srcs = [go_mod] + list(srcs),
@@ -36,17 +44,17 @@ export GOFLAGS="-mod=readonly"
 mkdir -p "$$GOCACHE" "$$GOMODCACHE" "$$GOPATH"
 
 cd "$$builddir"
-"$$execroot/$(execpath {go_sdk_repo}//:bin/go)" build {go_args} -o "$$out_root/{name}/{out_binary}" {package}
+"$$execroot/$(execpath {go_bin})" build {go_args} -o "$$out_root/{name}/{out_binary}" {package}
 """.format(
             go_mod = go_mod,
-            go_sdk_repo = go_sdk_repo,
+            go_bin = go_bin,
             go_args = " ".join(["'%s'" % a for a in go_args]),
             name = name,
             out_binary = out_binary,
             package = package,
         ),
         message = "Running legacy Go build for %s" % name,
-        tools = ["%s//:bin/go" % go_sdk_repo],
+        tools = [go_bin],
         visibility = visibility,
     )
 

@@ -1,0 +1,9 @@
+# Each line is an argv for the binary under test. Both the legacy-built and
+# Bazel-built binaries run every case; stdout, stderr, and exit codes must be
+# byte-identical. (Blank lines and # comments are skipped.)
+
+world
+bazel
+--version
+--definitely-not-a-flag
+multiple words here

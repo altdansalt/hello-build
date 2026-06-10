@@ -65,7 +65,9 @@ def parity_test(
 
     py_test(
         name = name,
-        srcs = ["//tools/parity:parity_runner.py"],
+        # Label(): resolve in this module, not the caller's repo — consumers
+        # load these macros from standalone workspaces (ADR 0019).
+        srcs = [Label("//tools/parity:parity_runner.py")],
         args = args,
         data = test_data,
         env = test_env,

@@ -1,0 +1,11 @@
+# Same hermeticity posture as hello-build's root .bazelrc: no network inside
+# actions (ADR 0006), no environment leaks. Fleet ports copy this file.
+build --sandbox_default_allow_network=false
+build --incompatible_strict_action_env
+build --disk_cache=~/.cache/hello-build/disk-cache
+
+test --test_output=errors
+
+# Opt-in shareable evidence link (ADR 0018).
+build:public --bes_results_url=https://app.buildbuddy.io/invocation/
+build:public --bes_backend=grpcs://remote.buildbuddy.io

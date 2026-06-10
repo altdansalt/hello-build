@@ -13,21 +13,26 @@ project delivers, what to onboard next, and what the tooling owes us.
 
 Four distinct things that share artifacts (ADR 0018):
 
-1. **The product: the toolkit.** `tools/` wrappers, the
-   [playbook](playbook.md), the contract tests, and the
-   [decision log](decisions/) — the thing that gets sharper with every
-   port and makes the next one cheap. The ADRs are part of the product:
-   they are what makes "an agent plus a one-line prompt" reproducible
-   rather than lucky.
+1. **The product: a skill plus a tooling module** (ADR 0019). The skill
+   ([skills/](../skills/)) is the judgment — the playbook, hard rules,
+   and gotchas packaged as agent instructions. The `hello_build` Bazel
+   module is the machinery — `tools/` wrappers and checks, consumable
+   from standalone workspaces (BCR publication once the interface
+   settles). The [decision log](decisions/) is part of the product: it
+   is what makes "an agent plus a one-line prompt" reproducible rather
+   than lucky.
 2. **The proof: parity evidence.** `parity_test` targets whose passing
    actually means something ([principles.md](principles.md)), kept honest
    by the guardrails: inventory reconciliation, polarity canaries, profile
    mirroring, hermetic actions (ADR 0006), the host-baseline audit.
-3. **The artifacts: the ports.** Honest Bazel builds of real repos. Each
-   port is three things at once — a usable artifact, a permanent
-   regression test for the toolkit (`bazel test //...` keeps every port
-   green forever), and training data for the next port (its run report in
-   [ports/](ports/)).
+3. **The artifacts: the ports.** Honest Bazel builds of real repos, in
+   two populations with opposite selection rules (ADR 0019):
+   **capability ports** live in this monorepo, must earn a new wrapper or
+   ADR, and stay green under `bazel test //...` forever; **fleet ports**
+   are standalone workspaces consuming the `hello_build` module on
+   deliberately *paved* paths — validation runs of the product, indexed
+   from the root README. Every port leaves a run report in
+   [ports/](ports/).
 4. **The showcase: shareable evidence.** The public repo, and per-port
    evidence links — a green `bazel test //...` invocation shared via
    `--config=public` (.bazelrc), the commit range, the run report.
@@ -40,8 +45,9 @@ four above.
 
 - **No self-serve tool for arbitrary repos.** There is no
   `port <git-url>` command and none is planned. The interface for porting
-  a new repo is this repo: the playbook plus an agent, with the contract
-  tests as the safety net.
+  a new repo is the skill plus an agent, with the module's contract
+  tests as the safety net (ADR 0019 — a skill is guidance, not a
+  product binary; the agent stays in the loop).
 - **Porting runs are not showcased.** A port is an agent session, not a
   Bazel invocation; session links and transcripts are not published. What
   gets shown is the port's evidence: the green run, the commits, the run

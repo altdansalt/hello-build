@@ -80,14 +80,14 @@ use_repo(
 
 register_toolchains("@rust_toolchains//:all")
 
+# Unnamed download: naming the SDK repo is root-module-only, and hello_build
+# must work as a dependency of standalone port workspaces (ADR 0019).
+# Toolchains are auto-registered by rules_go (@go_toolchains//:all);
+# tools/go.bzl reaches the SDK's `go` binary through the stable
+# go_host_compatible_sdk_label indirection.
 go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
-go_sdk.download(
-    name = "go_1_26_4_sdk",
-    version = "1.26.4",
-)
-use_repo(go_sdk, "go_1_26_4_sdk")
-
-register_toolchains("@go_1_26_4_sdk//:all")
+go_sdk.download(version = "1.26.4")
+use_repo(go_sdk, "go_host_compatible_sdk_label")
 
 node = use_extension("@rules_nodejs//nodejs:extensions.bzl", "node")
 node.toolchain(node_version = "22.22.0")

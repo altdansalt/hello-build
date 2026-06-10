@@ -69,6 +69,8 @@ tools/              shared Starlark + scripts (legacy_make, legacy_cargo,
                     repo-wide host-baseline and onboarding-contract tests
 examples/hello/     toy upstream repo demonstrating the full pattern
 examples/hello-node/ pinned Node action regression target
+consumers/hello-standalone/  standalone workspace consuming hello_build as
+                    an external module — the ADR 0019 consumability check
 <repo>/             one top-level package per onboarded real repo; upstream
                     sources fetched as @<repo>_src (MODULE.bazel, sha256-pinned,
                     BUILD file injected from <repo>/<repo>.BUILD.bazel)
