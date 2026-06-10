@@ -111,6 +111,31 @@ load that metadata from the pinned archive.
   into ad hoc local copies.
 - Finer-grained internal targets encouraged; the public names are aliases.
 
+### Cargo/Rust checklist
+
+Use this path for Cargo workspaces until `tools/cargo.bzl%legacy_cargo` exists
+(ADR 0007):
+
+- Add `rules_rust` and register a pinned Rust toolchain in `MODULE.bazel`.
+- Add `crate.from_cargo(...)` using the upstream `Cargo.toml` and `Cargo.lock`
+  from the pinned source archive.
+- Add a root `BUILD.bazel` package marker if a module extension reads
+  `//:MODULE.bazel`.
+- Import the generated crate repositories explicitly under Bzlmod strict repo
+  visibility; do not rely on host Cargo caches.
+- For the legacy build, run upstream Cargo with the pinned Bazel `cargo` and
+  `rustc`, `--locked`, and `--offline`. Populate any vendor directory from
+  pinned/fetched inputs, not from networked action-time downloads.
+- Decide feature scope early. A first port may use `--no-default-features` if
+  defaults pull in unrelated web, WASM, system-library, or platform-specific
+  surfaces; document that scope in the repo README.
+- Let `crate_universe` provide third-party crates, then model path workspace
+  crates as explicit `rust_library` targets. Review generated or sketched
+  targets for feature flags, proc macros, build scripts, `include!` data, and
+  Cargo env vars such as `CARGO_PKG_VERSION`.
+- Start parity with daemon-free or fixture-light CLI cases, then grow into
+  upstream unit/integration tiers once the core build is stable.
+
 ## 5. Same suite against the Bazel binary (`bazel_test`)
 
 - Reuse step 3's harness with the Bazel binary substituted. If the harness

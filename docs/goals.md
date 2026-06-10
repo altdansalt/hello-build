@@ -37,3 +37,15 @@ From the project brief, roughly easiest-first within each build system:
 Expect new requirements to emerge per build system (e.g. cargo's lockfile
 vs our vendoring; cmake's configure step; go's module cache). Each becomes
 an ADR or a tools/ wrapper.
+
+## Tooling backlog from rmux
+
+- Add `tools/cargo.bzl%legacy_cargo` so Cargo legacy builds can use a pinned
+  Bazel Rust toolchain, an offline vendor tree, and declared binary extraction
+  without per-repo genrule boilerplate.
+- Add a crate-universe helper that emits strict-Bzlmod `use_repo(...)` imports
+  and vendor filegroup annotations from generated crate metadata.
+- Add a workspace-crate generator that sketches `rust_library` targets for
+  Cargo path dependencies.
+- Extend `parity_test` cases beyond whitespace-split argv lines, preferably to
+  JSONL with explicit args/stdin/env fields.
