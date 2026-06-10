@@ -61,23 +61,31 @@ accident.)
 
 ## Candidate repos
 
-Next up, in rough order of what they prove:
+Done: redis (make/C), rmux (cargo), the_silver_searcher (autotools + C
+deps from source). Next up, in rough order of learning per effort:
 
-- **the_silver_searcher** (autotools/C) — new capability: the
-  `./configure` step and C dependencies (pcre, lzma, zlib) built from
-  pinned source instead of found on the host. Small. The natural warm-up
-  for tmux and the cmake family.
-- **tmux** (autotools/C, libevent + ncurses) — same capability class,
-  bigger deps; do it second if ag goes well, or first if its suite is
-  stronger (check in step 0.5).
 - **shelley or another small Go repo** — new capability: rules_go +
-  Gazelle, go.mod pinning, `go test` on both sides. Likely the gentlest
-  new-language port; grafana/prometheus/kubernetes/moby wait behind it.
-- **ripgrep** (cargo) — reusability proof for the rmux tooling on foreign
-  code (build scripts, feature matrix). Cheap; reasonable as a second
-  concurrent port, not as the only next port.
-- **cmake tier**: neovim, llvm-project, ClickHouse — a major new wrapper;
-  attempt after autotools has shaken out the configure-step patterns.
+  Gazelle, go.mod pinning, `go test` on both sides. The gentlest
+  new-language port and the biggest unlock
+  (grafana/prometheus/kubernetes/moby wait behind it); pure-Go static
+  binaries also feed the arm64/platform ratchet later (vision.md).
+- **ninja** (cmake/C++) — the cmake warm-up: smallest real CMake project
+  with a genuine test suite (gtest-based). New capabilities: a
+  `legacy_cmake` wrapper (configure→generate→build), first C++ parity, a
+  fetched googletest. Unlocks the neovim/llvm/ClickHouse tier. (Not on the
+  original brief; chosen by the smallest-repo-per-capability rule.)
+- **tmux** (autotools/C, libevent + ncurses) — autotools is paved now, so
+  the *new* lesson is runtime-environment parity: ncurses behavior depends
+  on the host terminfo database, the first case of binary behavior driven
+  by host data files. Upstream has a real `regress/` suite (~46 sh tests,
+  verified 2026-06-11).
+- **ripgrep** (cargo) — the one paved-path reusability proof for the rmux
+  tooling. New bits it would still teach: a build.rs that actually
+  generates code at build time, an optional native dep (pcre2), a large
+  CLI-level upstream suite. Cheap; good as a parallel second port.
+- **cpython** (autotools, later) — the oracle gold standard (regrtest is
+  enormous and battle-hardened); scale + extension modules make it a
+  multi-session port. Attempt once an opt-in big-suite tier pattern exists.
 - **Deferred**: zig (ruleset maturity), npm/yarn ecosystems (TypeScript,
   excalidraw, react, opencode — heavy, output-parity story needs design),
   julia / rust-lang/rust / bun / deno / zed / uv / ruff (big or paved-path),
