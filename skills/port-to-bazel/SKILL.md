@@ -30,7 +30,11 @@ module's own docs (fetched with it, or on GitHub): `docs/playbook.md`
 3. **`legacy_test`/`bazel_test` run the UPSTREAM suite.** A documented
    subset is fine; a suite you wrote is not (name yours
    `*_test_functional` — it is parity evidence, not upstream coverage).
-   Every excluded upstream test gets a written reason.
+   Every excluded upstream test gets a written reason. Choose subsets
+   by CLASS ("all plain recipes", "all non-perl sh tests"), never by
+   outcome — "the ones that pass" is survivor bias. Label the un-run
+   remainder "not yet evaluated" and itemize anything that failed
+   scouting rather than folding it into a catch-all.
 4. **Mirror the legacy build's profile, not just its flags.** Profiles
    change behavior (Rust debug_assertions, C `-DNDEBUG`). Release legacy
    binary → wrap the Bazel binary in
