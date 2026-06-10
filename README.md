@@ -99,3 +99,4 @@ plus tooling (ADR 0019). Each links its own public test invocation:
 | Port | Upstream | Path | Evidence |
 |---|---|---|---|
 | [fleet-gnu-hello](https://github.com/altdansalt/fleet-gnu-hello) | GNU hello 2.12.3 | autotools/C | [6/6 tests](https://app.buildbuddy.io/invocation/b10b54f0-11e4-4c17-9fea-3a8b42036bda) |
+| [fleet-hexyl](https://github.com/altdansalt/fleet-hexyl) | hexyl 0.17.0 | cargo/Rust | [6/6 tests](https://app.buildbuddy.io/invocation/5a8e775c-6c72-4eaf-ba18-e50e701c423f) |

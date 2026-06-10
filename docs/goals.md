@@ -166,3 +166,16 @@ step; go's module cache). Each becomes an ADR or a tools/ wrapper.
   runners already report verified-unit counts, so a "ran at least N tests"
   assertion per suite is the next ratchet if function-level drops ever
   bite.
+- An absolute-`CARGO_BIN_EXE` story for chdir-heavy Rust integration
+  suites: `cargo_bin!`/`CARGO_BIN_EXE_*` are compile-time and Bazel's
+  `$(rootpath)` is runfiles-relative, so upstream tests that chdir before
+  spawning break. Named by two ports now (rmux: per-test skips; hexyl:
+  the whole integration file lost Bazel-side). Candidate shapes: a
+  visible `patches/` pattern absolutizing the helper, or a launcher that
+  rewrites the env before libtest starts. Capability work — belongs in
+  the monorepo with a regression example, not in a fleet port.
+- Per-side inventory wiring: `upstream_inventory_test` has one `wired`
+  list, but hexyl's integration file runs in `legacy_test` while excluded
+  from `bazel_test` — "excluded" under-claims. Consider
+  `wired_legacy`/`wired_bazel` (or reason-prefix conventions) if a third
+  port hits this.
