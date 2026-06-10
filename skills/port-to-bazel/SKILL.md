@@ -162,6 +162,10 @@ polarity canary. Then produce the shareable evidence link:
 - Sandbox source trees are read-only: the legacy wrappers already copy to
   scratch dirs — use them, don't open-code genrules. Upstream tests that
   write next to themselves need a documented skip, not a looser sandbox.
+- To locate a fetched tree from a test script, pass one
+  `$(rootpath @<repo>_src//:some/anchor/file)` as an argument and derive
+  the directory from it — don't enumerate runfiles layouts or `find` for
+  the tree.
 - Build metadata (timestamps, hostnames, git SHAs) is the #1 parity
   breaker: pin inputs on *both* sides (`SOURCE_DATE_EPOCH=0`,
   upstream-supported config) instead of normalizing outputs.
