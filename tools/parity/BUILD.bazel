@@ -1,10 +1,30 @@
-exports_files(["parity_test.sh"])
-load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+load("@rules_python//python:defs.bzl", "py_binary", "py_test")
 
-sh_binary(
+# The parity runner executes via the hermetic rules_python toolchain
+# (MODULE.bazel), not a host interpreter. tools/parity.bzl wraps it as a
+# py_test.
+py_binary(
     name = "parity_runner",
     srcs = ["parity_runner.py"],
     visibility = ["//visibility:public"],
 )
 
 exports_files(["parity_runner.py"])
+
+# The runner's regression test (ADR 0010): every claim the harness makes is
+# asserted here, against runtime-generated fixture scripts.
+py_test(
+    name = "parity_runner_test",
+    size = "small",
+    srcs = [
+        "parity_runner.py",
+        "parity_runner_test.py",
+    ],
+    main = "parity_runner_test.py",
+)
+
+filegroup(
+    name = "audit_srcs",
+    srcs = glob(["**"]),
+    visibility = ["//tools/audit:__pkg__"],
+)

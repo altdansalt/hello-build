@@ -4,7 +4,7 @@ See tools/parity/parity_runner.py for what is checked and docs/principles.md
 for what we accept as parity evidence.
 """
 
-load("@rules_shell//shell:sh_test.bzl", "sh_test")
+load("@rules_python//python:defs.bzl", "py_test")
 
 def parity_test(
         name,
@@ -31,7 +31,7 @@ def parity_test(
       suite_bin_env: env var name the suite reads to find the binary under test.
       data: extra runtime data (e.g. fixtures the suite needs).
       env: extra environment for the test.
-      **kwargs: forwarded to sh_test (size, tags, ...).
+      **kwargs: forwarded to py_test (size, tags, ...).
     """
     if cases and cases_jsonl:
         fail("parity_test(%s): provide only one of cases= or cases_jsonl=" % name)
@@ -63,11 +63,12 @@ def parity_test(
             suite_bin_env,
         ])
 
-    sh_test(
+    py_test(
         name = name,
         srcs = ["//tools/parity:parity_runner.py"],
         args = args,
         data = test_data,
         env = test_env,
+        main = "parity_runner.py",
         **kwargs
     )
