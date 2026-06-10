@@ -43,17 +43,28 @@ def parse_test(path):
 
 
 def read_until_marker(proc, marker):
+    """Returns (output, status); status is None if the shell exited first.
+
+    A command like `exit 80` (cram's skip convention) terminates the
+    persistent shell before the marker prints, so EOF is a legal outcome —
+    the caller decides based on the shell's exit code.
+    """
     out = []
     while True:
         line = proc.stdout.readline()
         if line == "":
-            raise RuntimeError("shell exited before status marker")
+            return "".join(out), None
         if line.startswith(marker):
             return "".join(out), int(line[len(marker):].strip())
         out.append(line)
 
 
 def run_blocks(test_path, root):
+    blocks = parse_test(test_path)
+    if not blocks:
+        # A suite of zero commands "passes" silently; treat parse drift
+        # (changed cram markers, encoding surprises) as an error instead.
+        raise RuntimeError(f"{test_path}: parsed no command blocks")
     env = os.environ.copy()
     env["TESTDIR"] = str(root / "tests")
     env["TESTTMP"] = str(root / "tmp")
@@ -68,13 +79,21 @@ def run_blocks(test_path, root):
     )
     actual = []
     try:
-        for index, (command, _) in enumerate(parse_test(test_path)):
+        for index, (command, _) in enumerate(blocks):
             marker = f"__CRAM_STATUS_{index}__"
             proc.stdin.write(command + "\n")
             proc.stdin.write(f"printf '{marker}%s\\n' \"$?\"\n")
             proc.stdin.flush()
             output, status = read_until_marker(proc, marker)
             actual.extend(output.splitlines())
+            if status is None:
+                status = proc.wait(timeout=5)
+                if status == 80:
+                    return None
+                raise RuntimeError(
+                    f"{test_path}: shell exited with {status} before the "
+                    "status marker"
+                )
             if status == 80:
                 return None
             if status:
@@ -84,7 +103,7 @@ def run_blocks(test_path, root):
         proc.terminate()
         proc.wait(timeout=5)
     expected = []
-    for _, lines in parse_test(test_path):
+    for _, lines in blocks:
         expected.extend(lines)
     return expected, actual
 

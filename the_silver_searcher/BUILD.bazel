@@ -18,6 +18,7 @@ UPSTREAM_TESTS = [
     "ignore_abs_path.t",
     "ignore_absolute_search_path_with_glob.t",
     "ignore_backups.t",
+    "ignore_examine_parent_ignorefiles.t",
     "ignore_extensions.t",
     "ignore_gitignore.t",
     "ignore_invert.t",
@@ -32,6 +33,7 @@ UPSTREAM_TESTS = [
     "max_count.t",
     "multiline.t",
     "negated_options.t",
+    "one_device.t",
     "only_matching.t",
     "option_g.t",
     "option_smartcase.t",
@@ -130,6 +132,18 @@ py_test(
         "@the_silver_searcher_tests_src//:tests/%s" % test
         for test in UPSTREAM_TESTS
     ],
+)
+
+# The cram runner is load-bearing for both suites above; this asserts its
+# claims against synthetic .t fixtures (ADR 0010).
+py_test(
+    name = "cram_runner_test",
+    size = "small",
+    srcs = [
+        "tests/cram_runner.py",
+        "tests/cram_runner_test.py",
+    ],
+    main = "tests/cram_runner_test.py",
 )
 
 parity_test(

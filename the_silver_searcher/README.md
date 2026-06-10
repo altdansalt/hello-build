@@ -26,9 +26,12 @@ profile, not Bazel opt.
 
 The 2.2.0 official release tarball includes generated autotools files but omits
 the `tests/` directory, so tests are fetched from the matching GitHub 2.2.0 tag.
-`legacy_test` and `bazel_test` run 39 upstream top-level `tests/*.t` files
-unchanged through `tests/cram_runner.py`, a small runner for the cram features
-used by this suite.
+`legacy_test` and `bazel_test` run all **41** upstream top-level `tests/*.t`
+files unchanged through `tests/cram_runner.py`, a small runner for the cram
+features used by this suite (the runner has its own regression test,
+`:cram_runner_test`, per ADR 0010; a `.t` file that parses to zero commands is
+an error, so the suite cannot pass vacuously). `one_device.t` self-skips via
+cram's exit-80 convention when `/dev/shm` is not a separate device.
 
 Excluded upstream tests:
 
@@ -42,7 +45,7 @@ Excluded upstream tests:
 
 ## Parity Evidence
 
-The strongest evidence is suite parity: the same 39 upstream cram tests pass
+The strongest evidence is suite parity: the same 41 upstream cram tests pass
 against `legacy_binary` and `bazel_binary`. `parity_test` adds byte-identical
 case parity for version output and stdin-search/count/file-list modes. No output
 normalization is applied.
