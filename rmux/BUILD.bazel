@@ -1,9 +1,11 @@
 # Public interface targets live here; rmux.BUILD.bazel is injected into
-# @rmux_src for the Bazel-native source build.
+# @rmux_src for the Bazel-native source build and Bazel-compiled upstream tests.
 
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
-load("//tools:cargo.bzl", "legacy_cargo")
+load("//tools:cargo.bzl", "legacy_cargo", "legacy_cargo_test")
+load("//tools:compilation_mode.bzl", "opt_binary")
 load("//tools:parity.bzl", "parity_test")
+load(":tests.bzl", "RMUX_FLAKY_SKIPS", "RMUX_INTEGRATION_TESTS", "RMUX_LIB_TESTS")
 load(":vendor_crates.bzl", "RMUX_VENDOR_CRATES")
 
 legacy_cargo(
@@ -29,18 +31,57 @@ alias(
     actual = ":legacy_build_rmux",
 )
 
+# The shipped legacy binary is `cargo build --release`; the Bazel-native
+# binary must match that profile (debug_assertions and overflow checks are
+# behavior, not just optimization — ADR 0008), so it is pinned to -c opt
+# regardless of the compilation mode `bazel test //...` runs under.
+opt_binary(
+    name = "bazel_binary",
+    binary = "@rmux_src//:rmux",
+)
+
 alias(
     name = "bazel_build",
-    actual = "@rmux_src//:rmux",
+    actual = ":bazel_binary",
 )
 
-alias(
-    name = "bazel_binary",
-    actual = "@rmux_src//:rmux",
-)
-
-sh_test(
+# The unmodified upstream suite (`cargo test` on the root package: 573 tests),
+# compiled and run offline by the pinned Bazel cargo/rustc in dev profile,
+# exactly as upstream runs it.
+legacy_cargo_test(
     name = "legacy_test",
+    size = "large",
+    timeout = "eternal",
+    srcs = ["@rmux_src//:tree"],
+    cargo_toml = "@rmux_src//:Cargo.toml",
+    cargo_lock = "@rmux_src//:Cargo.lock",
+    vendor_crates = RMUX_VENDOR_CRATES,
+    cargo_args = [
+        "test",
+        "--locked",
+        "--offline",
+        "--no-default-features",
+        "--workspace",
+    ],
+    skip_tests = RMUX_FLAKY_SKIPS,
+)
+
+# The same upstream tests, Bazel-compiled against the Bazel-native build
+# (fastbuild = cargo's dev profile; see rmux.BUILD.bazel).
+test_suite(
+    name = "bazel_test",
+    tests = ["@rmux_src//:rmux_unit_test"] + [
+        "@rmux_src//:%s_unit_test" % lib
+        for lib in RMUX_LIB_TESTS
+    ] + [
+        "@rmux_src//:it_%s" % t
+        for t in RMUX_INTEGRATION_TESTS
+    ],
+)
+
+# Daemon-free functional smoke tier, shared with parity below.
+sh_test(
+    name = "legacy_test_functional",
     size = "small",
     srcs = ["tests/smoke.sh"],
     data = [":legacy_binary"],
@@ -48,7 +89,7 @@ sh_test(
 )
 
 sh_test(
-    name = "bazel_test",
+    name = "bazel_test_functional",
     size = "small",
     srcs = ["tests/smoke.sh"],
     data = [":bazel_binary"],
@@ -71,4 +112,10 @@ parity_test(
     bazel_binary = ":bazel_binary",
     cases_jsonl = "parity_cases.jsonl",
     legacy_binary = ":legacy_binary",
+)
+
+filegroup(
+    name = "audit_srcs",
+    srcs = glob(["**"]),
+    visibility = ["//tools/audit:__pkg__"],
 )

@@ -1,6 +1,8 @@
-load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+load("@rules_python//python:defs.bzl", "py_binary")
 
-sh_binary(
+# Runs via the hermetic rules_python toolchain (MODULE.bazel), not a host
+# interpreter: legacy_cargo invokes it inside build actions.
+py_binary(
     name = "synthesize_vendor_checksums",
     srcs = ["synthesize_vendor_checksums.py"],
     visibility = ["//visibility:public"],
@@ -9,4 +11,11 @@ sh_binary(
 exports_files([
     "generate_crate_universe_imports.py",
     "generate_workspace_crates.py",
+    "run_cargo_test.sh",
 ])
+
+filegroup(
+    name = "audit_srcs",
+    srcs = glob(["**"]),
+    visibility = ["//tools/audit:__pkg__"],
+)

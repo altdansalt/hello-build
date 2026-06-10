@@ -1,4 +1,6 @@
-"""Helpers for running upstream Cargo builds inside Bazel actions."""
+"""Helpers for running upstream Cargo builds and test suites inside Bazel actions."""
+
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
 
 def _repo_label(repo, target):
     if repo.startswith("@"):
@@ -126,3 +128,84 @@ cd "$$builddir"
             executable = True,
             visibility = visibility,
         )
+
+def legacy_cargo_test(
+        name,
+        srcs,
+        cargo_toml,
+        cargo_lock,
+        vendor_crates,
+        cargo_args = ["test", "--locked", "--offline"],
+        skip_tests = [],
+        rust_tools_repo = "@rust_linux_x86_64__x86_64-unknown-linux-gnu__stable_tools",
+        checksum_tool = "//tools/cargo:synthesize_vendor_checksums",
+        env = {},
+        **kwargs):
+    """Runs an upstream `cargo test` suite offline as a Bazel test.
+
+    The test action copies the pinned source tree to a scratch dir, populates
+    a Cargo vendor directory from the same fetched crate repositories the
+    Bazel-native build uses, and runs the unmodified upstream suite with the
+    pinned Bazel cargo/rustc. Compilation happens inside the test action, so
+    expect minutes of build time on first run (results are cached like any
+    other test).
+
+    Args:
+      name: test target name (conventionally "legacy_test").
+      srcs: upstream source tree filegroups/labels.
+      cargo_toml: label of the top-level Cargo.toml.
+      cargo_lock: label of the Cargo.lock used for --locked/offline runs.
+      vendor_crates: list of (repo_name, vendor_dir) tuples; see legacy_cargo.
+      cargo_args: the Cargo command line, e.g. ["test", "--locked", "--offline"].
+      skip_tests: upstream test names to skip (passed as `-- --skip <name>`).
+          Every entry is a parity confession: document each in the repo README.
+      rust_tools_repo: repo exposing :cargo and :rustc from rules_rust.
+      checksum_tool: executable that writes .cargo-checksum.json files.
+      env: extra environment for the test.
+      **kwargs: forwarded to sh_test (size, timeout, tags, ...).
+    """
+    manifest_lines = []
+    vendor_srcs = []
+    for repo, vendor_dir in vendor_crates:
+        manifest = _repo_label(repo, "Cargo.toml")
+        vendor_srcs.append(manifest)
+        vendor_srcs.append(_repo_label(repo, "vendor_tree"))
+        manifest_lines.append('echo "{vendor_dir} $(rootpath {manifest})" >> $@'.format(
+            manifest = manifest,
+            vendor_dir = vendor_dir,
+        ))
+
+    native.genrule(
+        name = "%s_vendor_manifest" % name,
+        srcs = [_repo_label(repo, "Cargo.toml") for repo, _ in vendor_crates],
+        outs = ["%s_vendor_manifest.txt" % name],
+        cmd = "\n".join([": > $@"] + manifest_lines),
+    )
+
+    args = [
+        "$(rootpath %s)" % _repo_label(rust_tools_repo, "cargo"),
+        "$(rootpath %s)" % _repo_label(rust_tools_repo, "rustc"),
+        "$(rootpath %s)" % _repo_label(rust_tools_repo, "rustdoc"),
+        "$(rootpath %s)" % cargo_toml,
+        "$(rootpath :%s_vendor_manifest)" % name,
+        "$(rootpath %s)" % checksum_tool,
+    ] + list(cargo_args)
+    if skip_tests:
+        args.append("--")
+        for test in skip_tests:
+            args.extend(["--skip", test])
+
+    sh_test(
+        name = name,
+        srcs = ["//tools/cargo:run_cargo_test.sh"],
+        args = args,
+        data = [cargo_toml, cargo_lock] + list(srcs) + vendor_srcs + [
+            ":%s_vendor_manifest" % name,
+            checksum_tool,
+            _repo_label(rust_tools_repo, "cargo"),
+            _repo_label(rust_tools_repo, "rustc"),
+            _repo_label(rust_tools_repo, "rustdoc"),
+        ],
+        env = env,
+        **kwargs
+    )

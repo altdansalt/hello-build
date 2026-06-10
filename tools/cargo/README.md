@@ -25,3 +25,9 @@ tools/cargo/generate_workspace_crates.py /path/to/unpacked/workspace
 ```
 
 Both generators produce reviewable Starlark; they do not edit files.
+
+`tools/cargo.bzl%legacy_cargo_test` runs the unmodified upstream `cargo test`
+the same way, as a Bazel *test*: the workspace compiles inside the test
+action with the pinned toolchain and the synthesized vendor directory, fully
+offline. `skip_tests` entries are coverage confessions — document each in the
+repo README's "Upstream suite" section.

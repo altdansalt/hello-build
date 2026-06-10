@@ -1,5 +1,19 @@
-load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
 load("@rmux_crates//:defs.bzl", "aliases", "all_crate_deps")
+load(
+    "@hello_build//rmux:tests.bzl",
+    "RMUX_INTEGRATION_TESTS",
+    "RMUX_LIB_TESTS",
+    "RMUX_TEST_TAGS",
+    "rmux_skip_args",
+)
+
+# Upstream fixture lookups resolve env!("CARGO_MANIFEST_DIR") at compile
+# time; point it at this repo's directory inside runfiles (cwd of a test is
+# the main-repo runfiles dir). The name is this repo's canonical bzlmod name
+# (use_repo_rule http_archive in the root module) — stable for the pinned
+# Bazel version.
+RMUX_RUNFILES_MANIFEST_DIR = "../+http_archive+rmux_src"
 
 filegroup(
     name = "tree",
@@ -230,3 +244,116 @@ rust_binary(
         normal = True,
     ),
 )
+
+# --- Upstream test suite, Bazel-compiled ---------------------------------
+# Mirrors `cargo test` on the root package: the unit tests baked into the
+# binary crate plus every tests/*.rs integration file. Tests exec the
+# Bazel-built binary via the compile-time CARGO_BIN_EXE_rmux env var, exactly
+# as Cargo would provide it. These run in fastbuild (debug_assertions on),
+# matching cargo test's dev profile — upstream's daemon harness depends on a
+# debug-profile-only binary override (see crates/rmux-client/src/auto_start.rs).
+
+# Files upstream tests read at runtime via CARGO_MANIFEST_DIR: frozen tmux
+# references, wire fixtures, the manpage, and the crate's own sources (the
+# command-surface tests introspect src/cli_args.rs and src/cli/dispatch.rs).
+RMUX_TEST_FIXTURES = ["rmux.1"] + glob([
+    "src/**/*.rs",
+    "tests/reference/**",
+    "tests/wire-fixtures/**",
+])
+
+rust_test(
+    name = "rmux_unit_test",
+    size = "medium",
+    args = rmux_skip_args("rmux_unit_test"),
+    crate = ":rmux",
+    data = [":rmux"] + RMUX_TEST_FIXTURES,
+    proc_macro_deps = all_crate_deps(
+        package_name = "",
+        proc_macro = True,
+        proc_macro_dev = True,
+    ),
+    rustc_env = {
+        "CARGO_BIN_EXE_rmux": "$(rootpath :rmux)",
+        "CARGO_BIN_NAME": "rmux",
+        "CARGO_MANIFEST_DIR": RMUX_RUNFILES_MANIFEST_DIR,
+        "CARGO_PKG_NAME": "rmux",
+        "CARGO_PKG_VERSION": "0.5.0",
+    },
+    visibility = ["//visibility:public"],
+    deps = [
+        ":rmux_core",
+        ":rmux_proto",
+        ":rmux_pty",
+        ":rmux_sdk",
+    ] + all_crate_deps(
+        package_name = "",
+        normal_dev = True,
+    ),
+)
+
+[
+    rust_test(
+        name = "%s_unit_test" % lib,
+        size = "medium",
+        crate = ":%s" % lib,
+        proc_macro_deps = all_crate_deps(
+            package_name = "crates/%s" % lib.replace("_", "-"),
+            proc_macro = True,
+            proc_macro_dev = True,
+        ),
+        visibility = ["//visibility:public"],
+        deps = extra_dev_deps + all_crate_deps(
+            package_name = "crates/%s" % lib.replace("_", "-"),
+            normal_dev = True,
+        ),
+    )
+    for lib, extra_dev_deps in RMUX_LIB_TESTS.items()
+]
+
+RMUX_TEST_SUPPORT_SRCS = glob([
+    "tests/common/**/*.rs",
+    "tests/support/**/*.rs",
+    "tests/stress/**/*.rs",
+    "tests/tmux_compat_surface_matrix/**/*.rs",
+])
+
+[
+    rust_test(
+        name = "it_%s" % t,
+        size = "medium",
+        args = rmux_skip_args("it_%s" % t),
+        srcs = ["tests/%s.rs" % t] + RMUX_TEST_SUPPORT_SRCS,
+        compile_data = RMUX_TEST_FIXTURES,
+        crate_root = "tests/%s.rs" % t,
+        data = [":rmux"] + RMUX_TEST_FIXTURES,
+        edition = "2021",
+        proc_macro_deps = all_crate_deps(
+            package_name = "",
+            proc_macro = True,
+            proc_macro_dev = True,
+        ),
+        rustc_env = {
+            "CARGO_BIN_EXE_rmux": "$(rootpath :rmux)",
+            "CARGO_MANIFEST_DIR": RMUX_RUNFILES_MANIFEST_DIR,
+            "CARGO_PKG_NAME": "rmux",
+            "CARGO_PKG_VERSION": "0.5.0",
+        },
+        tags = RMUX_TEST_TAGS.get("it_%s" % t, []),
+        visibility = ["//visibility:public"],
+        deps = [
+            ":rmux_client",
+            ":rmux_core",
+            ":rmux_os",
+            ":rmux_proto",
+            ":rmux_pty",
+            ":rmux_sdk",
+            ":rmux_server",
+        ] + all_crate_deps(
+            package_name = "",
+            normal = True,
+            normal_dev = True,
+        ),
+    )
+    for t in RMUX_INTEGRATION_TESTS
+]
