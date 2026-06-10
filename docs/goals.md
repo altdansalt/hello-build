@@ -179,3 +179,8 @@ step; go's module cache). Each becomes an ADR or a tools/ wrapper.
   from `bazel_test` — "excluded" under-claims. Consider
   `wired_legacy`/`wired_bazel` (or reason-prefix conventions) if a third
   port hits this.
+- Pinned locale data as a dependency class: fleet-gnu-sed excluded 9
+  multibyte tests because en_US.UTF-8 / SJIS / ISO-8859-7 locale data is
+  host-specific and unpinned — the same host-data class as tmux's
+  terminfo lesson. A pinned-locales story (fetched locale archives +
+  LOCPATH) would recover a whole exclusion category across C ports.
