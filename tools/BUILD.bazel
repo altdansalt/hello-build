@@ -1,7 +1,30 @@
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+load("//tools:autotools.bzl", "configure_make")
+
 # Shared Starlark tooling lives here; runtime scripts live in subpackages.
 
 filegroup(
     name = "audit_srcs",
     srcs = glob(["*.bzl"]) + ["BUILD.bazel"],
     visibility = ["//tools/audit:__pkg__"],
+)
+
+filegroup(
+    name = "autotools_smoke_tree",
+    srcs = glob(["testdata/autotools_project/**"]),
+)
+
+configure_make(
+    name = "autotools_smoke_build",
+    srcs = [":autotools_smoke_tree"],
+    configure = "testdata/autotools_project/configure",
+    out_binaries = ["hello"],
+)
+
+sh_test(
+    name = "autotools_smoke_test",
+    size = "small",
+    srcs = ["testdata/run_autotools_smoke.sh"],
+    data = [":autotools_smoke_build_hello"],
+    env = {"HELLO_BIN": "$(rootpath :autotools_smoke_build_hello)"},
 )
