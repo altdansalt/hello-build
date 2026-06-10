@@ -1,2 +1,15 @@
 # Root package marker for module extensions that read //:MODULE.bazel.
 
+
+exports_files(["README.md"])
+
+filegroup(
+    name = "audit_srcs",
+    srcs = [
+        ".bazelrc",
+        ".bazelversion",
+        "BUILD.bazel",
+        "README.md",
+    ],
+    visibility = ["//tools/audit:__pkg__"],
+)

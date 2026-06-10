@@ -73,3 +73,9 @@ parity_test(
     suite = "upstream/tests/run_tests.sh",
     suite_bin_env = "HELLO_BIN",
 )
+
+filegroup(
+    name = "audit_srcs",
+    srcs = glob(["**"]),
+    visibility = ["//tools/audit:__pkg__"],
+)

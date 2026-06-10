@@ -50,3 +50,16 @@ an ADR or a tools/ wrapper.
   Cargo path dependencies.
 - `parity_test(cases_jsonl = ...)` supports JSONL cases with explicit
   args/stdin/env fields.
+- `tools/cargo.bzl%legacy_cargo_test` runs the unmodified upstream
+  `cargo test --workspace` offline inside a Bazel test action.
+
+## Backlog
+
+- A minimal in-repo Cargo example (`examples/hello-cargo`): the fast
+  regression test for `tools/cargo.bzl` and `opt_binary`, so tooling changes
+  don't need a multi-minute rmux rebuild to validate (ADR 0010 names this as
+  the known gap).
+- Shrink the host baseline (ADR 0009): hermetic C toolchain
+  (`toolchains_llvm`) and a pinned `make` are the obvious candidates; each
+  is its own ADR.
+- redis tcl `integration/*` units as an opt-in `size = "enormous"` tier.

@@ -181,3 +181,9 @@ parity_test(
     cases = "parity_cases_cli.txt",
     legacy_binary = ":legacy_binary_cli",
 )
+
+filegroup(
+    name = "audit_srcs",
+    srcs = glob(["**"]),
+    visibility = ["//tools/audit:__pkg__"],
+)

@@ -26,6 +26,22 @@ The repo documents itself: read these before changing anything.
 - **Never modify upstream sources.** Patches, if truly unavoidable, go in
   `<repo>/patches/`, applied visibly at build time, with parity
   implications documented.
+- **`legacy_test`/`bazel_test` run the UPSTREAM suite** — a documented
+  subset is fine, a suite you wrote yourself is not (name those
+  `*_test_functional`; they are parity evidence, not upstream coverage).
+  Every excluded upstream test gets a written reason.
+- **Mirror the legacy build's profile, not just its flags** (ADR 0008).
+  Profiles change behavior (Rust debug_assertions/overflow checks, C
+  `-DNDEBUG`). For a release-profile legacy binary, wrap the Bazel binary
+  in `tools/compilation_mode.bzl%opt_binary`; never set `-c opt` globally.
+- **Stay inside the host baseline** (ADR 0009,
+  tools/audit/host_baseline.txt): new toolchains come from rulesets in
+  MODULE.bazel, not host installs; unavoidable host tools get a
+  `requires-<tool>` tag AND a baseline entry. `//tools/audit` enforces this
+  and the per-repo README contract — run it early, read its messages.
+- **Tools test their claims** (ADR 0010): a change to `tools/` ships with
+  the test that proves it (examples/hello, parity_runner_test, or a new
+  fast test).
 - **Definition of done** for any onboarding or tooling change:
   `bazel clean --expunge && bazel test //...` passes on this host, and the
   root README table row honestly states coverage and gaps.
@@ -49,3 +65,12 @@ The repo documents itself: read these before changing anything.
   `--test_tag_filters` escape hatch (ADR 0005).
 - Tests may bind any port they like on the sandbox-private loopback;
   don't add `exclusive` tags or port-coordination machinery for that.
+- Cargo's `CARGO_BIN_EXE_*` is compile-time and Cargo bakes an absolute
+  path; under Bazel the equivalent `rustc_env` is runfiles-relative, so
+  upstream tests that chdir before spawning the binary need a documented
+  Bazel-side skip. Same story for `CARGO_MANIFEST_DIR`: override it to the
+  repo's runfiles dir and put the fixtures (and any introspected sources)
+  in `data` (see rmux.BUILD.bazel).
+- The sandbox keeps the test executable's directory and the source tree
+  read-only; upstream tests that write next to themselves need a skip with
+  a reason, not a looser sandbox.

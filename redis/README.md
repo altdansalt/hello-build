@@ -24,7 +24,24 @@ into that repo, and this package holds the interface and tests.
 
 Hosts without tclsh: `bazel test //redis:all --test_tag_filters=-requires-tclsh`.
 
-## Build configuration decisions
+## Upstream suite
+
+- `:legacy_test` / `:bazel_test` run 10 units of upstream's tcl suite
+  (`unit/type/*`, incr, expire, keyspace, auth, scripting — the list is
+  `TCL_UNITS` in [BUILD.bazel](BUILD.bazel)) against the respective
+  binaries, unchanged, via upstream's own `runtest` driver (~30s,
+  `requires-tclsh`).
+- Excluded: the `integration/*` units (replication, AOF, cluster) — slower
+  and partly flaky-by-design (kill/restart loops); candidates for an opt-in
+  `size = "enormous"` tier. The functional sh suite is ours and therefore
+  *parity* evidence, not upstream coverage (hence the `*_functional` names).
+
+## Build profile and configuration decisions
+
+- **Profile:** upstream's default `make` optimization (`-O3 -flto=auto`, no
+  `-DNDEBUG` — redis asserts stay live) is mirrored exactly in the Bazel
+  copts/linkopts below; neither side uses Bazel's `-c opt` (which would add
+  `-DNDEBUG` and compile asserts out, diverging from upstream — ADR 0008).
 
 - **`MALLOC=libc` on both sides.** Upstream's default on Linux is bundled
   jemalloc, built by jemalloc's `configure`. Rather than teach the Bazel
@@ -64,8 +81,6 @@ Hosts without tclsh: `bazel test //redis:all --test_tag_filters=-requires-tclsh`
 - `redis-benchmark`, `redis-sentinel` (a symlink mode of the server binary
   upstream builds), and module support (`tests/modules`, *.so) are not in
   the Bazel build yet; the chosen tcl units don't need them.
-- tcl `integration/*` units (replication, AOF, cluster) are not run; they
-  are slower and some are flaky-by-design (kill/restart loops). Candidates
-  for a `size = "enormous"` opt-in target.
+- tcl `integration/*` units are not run (see "Upstream suite" above).
 - Upstream default allocator (jemalloc) is not exercised (see above).
 - The tcl suite needs host tclsh 8.5+ (tagged `requires-tclsh`).

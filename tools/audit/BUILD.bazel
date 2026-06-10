@@ -1,0 +1,34 @@
+load("@rules_python//python:defs.bzl", "py_test")
+
+# Repo-wide static audits (ADR 0009). Each onboarded repo and tools package
+# exposes an `audit_srcs` filegroup; wiring it here is part of onboarding
+# (repo_contract_test fails on a README table row whose files are absent).
+AUDITED = [
+    "//:audit_srcs",
+    "//examples/hello:audit_srcs",
+    "//redis:audit_srcs",
+    "//rmux:audit_srcs",
+    "//tools:audit_srcs",
+    "//tools/cargo:audit_srcs",
+    "//tools/parity:audit_srcs",
+]
+
+filegroup(
+    name = "audit_srcs",
+    srcs = glob(["*"]),
+    visibility = ["//visibility:public"],
+)
+
+py_test(
+    name = "host_baseline_test",
+    size = "small",
+    srcs = ["host_baseline_test.py"],
+    data = ["host_baseline.txt"] + AUDITED + [":audit_srcs"],
+)
+
+py_test(
+    name = "repo_contract_test",
+    size = "small",
+    srcs = ["repo_contract_test.py"],
+    data = ["//:README.md"] + AUDITED,
+)

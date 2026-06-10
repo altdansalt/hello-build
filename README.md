@@ -28,13 +28,22 @@ the stable public interface.
 ## Constraints
 
 - **Bazel for everything.** Any host with Bazel (version pinned in
-  [.bazelversion](.bazelversion)) plus a C toolchain, `make`, and a POSIX
-  shell can build, test, and run every target.
+  [.bazelversion](.bazelversion)) plus the documented host baseline —
+  a C toolchain, `make`, and a POSIX shell
+  ([tools/audit/host_baseline.txt](tools/audit/host_baseline.txt)) — can
+  build, test, and run every target. Other toolchains (Python, Rust) are
+  fetched and pinned by Bazel; `//tools/audit:host_baseline_test` enforces
+  that no action or test quietly grows a new host dependency (ADR 0009).
 - **No network inside actions** (ADR 0006). Builds and tests run in network
   namespaces with only a private loopback (`.bazelrc`), so legacy builds
   can't download and tests can't touch the outside world. Bazel's *fetch
-  phase* may download — module deps and upstream source archives — pinned by
-  `MODULE.bazel.lock` and per-archive sha256s.
+  phase* may download — module deps, upstream source archives, toolchains —
+  pinned by `MODULE.bazel.lock` and per-archive sha256s.
+- **The legacy build is the spec, profile included** (ADR 0008). The
+  Bazel-native build mirrors the legacy build's flags *and* its
+  release/debug profile; `//tools/audit:repo_contract_test` requires every
+  onboarded repo to state its profile, upstream-suite coverage, parity
+  evidence, and known gaps in its README.
 
 ## Quick start
 
@@ -49,7 +58,9 @@ bazel run  //examples/hello:bazel_binary  -- you
 
 ```
 docs/               goals, principles, decision log, onboarding playbook
-tools/              shared Starlark + scripts (legacy_make, parity_test)
+tools/              shared Starlark + scripts (legacy_make, legacy_cargo,
+                    parity_test, opt_binary); tools/audit/ holds the
+                    repo-wide host-baseline and onboarding-contract tests
 examples/hello/     toy upstream repo demonstrating the full pattern
 <repo>/             one top-level package per onboarded real repo; upstream
                     sources fetched as @<repo>_src (MODULE.bazel, sha256-pinned,
@@ -62,6 +73,6 @@ examples/hello/     toy upstream repo demonstrating the full pattern
 |---|---|---|
 | [examples/hello](examples/hello) | make | ✅ all seven targets green |
 | [redis](redis) (7.2.7) | make | ✅ all seven + functional/cli variants; tcl suite tagged `requires-tclsh`; benchmark/sentinel/modules not in Bazel build yet |
-| [rmux](rmux) (0.5.0) | cargo | ✅ all seven targets green for `--no-default-features`; full daemon suite and optional web feature not wired yet |
+| [rmux](rmux) (0.5.0) | cargo | ✅ all seven + functional variants for `--no-default-features`; upstream suite (3458 tests) wired on both sides, 5 tests excluded with reasons; web feature not built |
 
 To add one, follow [docs/playbook.md](docs/playbook.md).

@@ -39,6 +39,20 @@ implications are documented in the repo's README.
 The Bazel-native build may restructure compilation however it likes — that
 is the entire point — but it must consume the same vendored sources.
 
+The spec includes the build **profile**: optimization level, assertion and
+overflow-check settings change behavior, not just speed (ADR 0008). A
+parity surface that stays green across a profile divergence is measuring
+too little, not proving enough.
+
+## Claims are tests
+
+A claim this repo makes about itself — "no host dependency beyond the
+baseline", "every onboarded repo states its gaps", "the parity harness
+treats identical failure as no evidence" — should be a failing test away
+from becoming true again (`//tools/audit`, `parity_runner_test`; ADR 0009,
+ADR 0010). A claim that cannot be tested is written down as an intention,
+where the next reader will find it.
+
 ## Hermeticity, honestly
 
 - The **Bazel-native** build should be as hermetic as Bazel allows.

@@ -1,0 +1,18 @@
+# The host baseline: what build/test actions in this repo may use from the
+# host, beyond Bazel itself and the hermetic toolchains fetched in
+# MODULE.bazel (rules_python, rules_rust; rules_cc autodetects the host C
+# toolchain). //tools/audit:host_baseline_test enforces this file two ways:
+# scripts/Starlark must not invoke tools outside it (deny-list tripwire), and
+# every requires-<tool> test tag in BUILD files must be documented here
+# (ADR 0005).
+#
+# Format: one entry per line; "<tool>" or "<tool> requires-<tool>".
+#
+# Shrinking this list is a goal (ADR 0009): prefer a pinned toolchain from a
+# maintained ruleset over a new host tool, and a requires-<tool> tag over a
+# silent dependency.
+cc
+make
+posix-sh-and-utilities
+man requires-man
+tclsh requires-tclsh

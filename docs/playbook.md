@@ -91,9 +91,16 @@ load that metadata from the pinned archive.
 
 - Find how upstream runs tests (`make check`, `cargo test`, `./runtest`).
 - Run that suite as a Bazel test against the legacy binary. Prefer invoking
-  the suite *unchanged*, pointed at the binary via env var or PATH.
+  the suite *unchanged*, pointed at the binary via env var or PATH. For
+  Cargo workspaces use `tools/cargo.bzl%legacy_cargo_test` (the suite
+  compiles inside the test action — minutes on first run, cached after).
 - If the full suite is too slow/flaky/host-dependent, run the largest stable
-  subset and document exactly what is excluded and why in `<repo>/README.md`.
+  subset and document exactly what is excluded and why in the README's
+  "Upstream suite" section (enforced by `//tools/audit:repo_contract_test`).
+- The names `legacy_test`/`bazel_test` are reserved for upstream's own
+  tests. A portable functional suite you write is valuable — as the parity
+  suite and as `*_test_functional` targets — but it is not upstream
+  coverage and must not pose as it.
 
 ## 4. Bazel-native build (`bazel_build`, `bazel_binary`)
 
@@ -102,6 +109,13 @@ load that metadata from the pinned archive.
 - Mirror the legacy build's compiler flags, defines, and feature config —
   divergence here is the #1 source of parity failures. Extract them from the
   legacy build's verbose output (`make V=1`) rather than guessing.
+- Mirror the legacy build's **profile** too (ADR 0008): profiles change
+  behavior (Rust debug_assertions and overflow checks, C `-DNDEBUG`). If
+  the legacy binary is a release build (`cargo --release`), wrap the Bazel
+  binary in `tools/compilation_mode.bzl%opt_binary`; if the legacy build is
+  unoptimized, leave the Bazel side alone — mirror, don't maximize. Test
+  suites run in the profile upstream runs them in (usually dev). State the
+  choice in the README's "Build profile" section.
 - New rulesets are ordinary `bazel_dep`s in `MODULE.bazel` (the lockfile
   pins them; actions still run without network).
 - Register language toolchains in `MODULE.bazel` instead of assuming host
@@ -134,6 +148,13 @@ Use this path for Cargo workspaces (ADR 0007):
   crates as explicit `rust_library` targets. `tools/cargo/generate_workspace_crates.py`
   can sketch these targets; review them for feature flags, proc macros, build
   scripts, `include!` data, and Cargo env vars such as `CARGO_PKG_VERSION`.
+- Wire the upstream suite on both sides: `legacy_cargo_test` for the Cargo
+  side (full `cargo test --workspace`, offline), and `rust_test` targets in
+  the injected BUILD file for the Bazel side — per-crate unit tests
+  (`crate = ...`) plus one target per `tests/*.rs`, exec'ing the Bazel
+  binary via `rustc_env` `CARGO_BIN_EXE_<bin>` and overriding
+  `CARGO_MANIFEST_DIR` to the repo's runfiles dir for fixtures (see
+  rmux.BUILD.bazel and the gotchas in CLAUDE.md).
 - Start parity with daemon-free or fixture-light CLI cases, then grow into
   upstream unit/integration tiers once the core build is stable. Use
   `parity_test(cases_jsonl = ...)` when cases need quoted args, stdin, or env.
@@ -153,10 +174,15 @@ Use this path for Cargo workspaces (ADR 0007):
 
 ## 7. Document
 
-- `<repo>/README.md`: upstream version, what each target covers, parity
-  evidence and known gaps, host requirements beyond the baseline.
-- Update the table in the root README. New generic lessons go to
-  `docs/decisions/` or `tools/`.
+- `<repo>/README.md` needs these sections (checked by
+  `//tools/audit:repo_contract_test`): **Targets**, **Build profile**,
+  **Upstream suite** (what runs in legacy_test/bazel_test, what is
+  excluded, why), **Parity evidence**, **Known gaps**. Host requirements
+  beyond the baseline get a `requires-<tool>` tag and a line in
+  `tools/audit/host_baseline.txt`.
+- Update the table in the root README, and wire the repo's `audit_srcs`
+  filegroup into `//tools/audit` (the contract test fails until you do).
+  New generic lessons go to `docs/decisions/` or `tools/`.
 
 ## Definition of done
 
