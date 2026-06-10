@@ -2,6 +2,7 @@ load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
 load("@rmux_crates//:defs.bzl", "aliases", "all_crate_deps")
 load(
     "@hello_build//rmux:tests.bzl",
+    "RMUX_FLAKY_TARGETS",
     "RMUX_INTEGRATION_TESTS",
     "RMUX_LIB_TESTS",
     "RMUX_TEST_TAGS",
@@ -328,6 +329,7 @@ RMUX_TEST_SUPPORT_SRCS = glob([
         crate_root = "tests/%s.rs" % t,
         data = [":rmux"] + RMUX_TEST_FIXTURES,
         edition = "2021",
+        flaky = "it_%s" % t in RMUX_FLAKY_TARGETS,
         proc_macro_deps = all_crate_deps(
             package_name = "",
             proc_macro = True,

@@ -30,12 +30,27 @@ RMUX_BAZEL_SKIPS = {
     ],
 }
 
-# Excluded on BOTH sides: timing-sensitive PTY redraw assertion, observed
-# flaky under upstream cargo on this host as well (fails ~1 in 3 runs).
-# Deterministic green for `bazel test //...` wins; revisit if upstream
-# stabilizes the redraw signal.
+# Rung 3 of the flake ladder (ADR 0014) — excluded on BOTH sides:
+# timing-sensitive PTY redraw assertion, observed flaky under upstream cargo
+# on this host as well (fails ~1 in 3 runs). Deterministic green for
+# `bazel test //...` wins; revisit if upstream stabilizes the redraw signal.
 RMUX_FLAKY_SKIPS = [
     "choose_tree_q_after_resize_restores_the_resized_four_pane_layout",
+]
+
+# Rung 2 of the flake ladder (ADR 0014): targets that flapped during
+# definition-of-done runs get `flaky = True` (≤3 bounded retries; a real
+# regression still fails). Records, with diagnosis:
+# - it_canonical_workflow: 2026-06-10, canonical_session_workflow_runs_end_
+#   to_end timed out waiting for "ctrl-c-recovered" during a clean-expunge
+#   //... run under parallel load; immediate targeted rerun passed.
+# - it_cli_surface: 2026-06-10, self_unsetting_hook_payload_runs_once_
+#   across_repeated_attaches exited 1 during the same kind of run;
+#   immediate targeted rerun passed.
+# De-escalate per the ADR if these stay quiet for a few months.
+RMUX_FLAKY_TARGETS = [
+    "it_canonical_workflow",
+    "it_cli_surface",
 ]
 
 # Upstream tests that exec host tools beyond the repo baseline (ADR 0005).
