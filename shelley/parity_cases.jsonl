@@ -1,0 +1,3 @@
+{"label":"allowed stdin","stdin":"we can make a thing\n"}
+{"label":"disallowed stdin","stdin":"we can bazel a thing\n"}
+{"label":"allow flag","args":["-allow","bazel"],"stdin":"we can bazel a thing\n"}

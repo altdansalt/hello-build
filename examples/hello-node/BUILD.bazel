@@ -1,0 +1,43 @@
+load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_run_binary", "js_test")
+
+js_binary(
+    name = "build_tool",
+    data = [
+        "src/message.txt",
+    ],
+    entry_point = "build.mjs",
+)
+
+js_run_binary(
+    name = "dist",
+    chdir = package_name(),
+    out_dirs = ["dist"],
+    srcs = [
+        "src/message.txt",
+    ],
+    tool = ":build_tool",
+)
+
+js_test(
+    name = "node_smoke_test",
+    chdir = package_name(),
+    data = [
+        "src/message.txt",
+    ],
+    entry_point = "node_smoke_test.mjs",
+)
+
+js_test(
+    name = "dist_test",
+    chdir = package_name(),
+    data = [
+        ":dist",
+    ],
+    entry_point = "dist_test.mjs",
+)
+
+filegroup(
+    name = "audit_srcs",
+    srcs = glob(["**"]),
+    visibility = ["//tools/audit:__pkg__"],
+)

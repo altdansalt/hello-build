@@ -1,0 +1,10 @@
+Project: Shelley
+Repository: https://github.com/boldsoftware/shelley
+Version: v0.684.965431717
+URL: https://github.com/boldsoftware/shelley/archive/refs/tags/v0.684.965431717.tar.gz
+Date pinned: 2026-06-10
+sha256: 2b793a17e6a35dac54a2242818da69bde32f25878b86070df54909965cd45ea7
+License: Apache-2.0, recorded in the upstream LICENSE file.
+Rationale: first Go onboarding slice; the pinned tag is the commit currently at
+main and contains a pure-Go cmd/upgoer5check binary that can prove the rules_go
+toolchain path before adding Shelley's Node/pnpm UI build.

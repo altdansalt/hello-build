@@ -53,6 +53,7 @@ the stable public interface.
 ```sh
 bazel test //...                                # everything (first run fetches pinned deps)
 bazel test //examples/hello:parity_test        # the canonical example
+bazel build //examples/hello-node:dist         # pinned Node action smoke build
 bazel run  //examples/hello:legacy_binary -- you
 bazel run  //examples/hello:bazel_binary  -- you
 ```
@@ -65,6 +66,7 @@ tools/              shared Starlark + scripts (legacy_make, legacy_cargo,
                     parity_test, opt_binary); tools/audit/ holds the
                     repo-wide host-baseline and onboarding-contract tests
 examples/hello/     toy upstream repo demonstrating the full pattern
+examples/hello-node/ pinned Node action regression target
 <repo>/             one top-level package per onboarded real repo; upstream
                     sources fetched as @<repo>_src (MODULE.bazel, sha256-pinned,
                     BUILD file injected from <repo>/<repo>.BUILD.bazel)
@@ -77,6 +79,7 @@ examples/hello/     toy upstream repo demonstrating the full pattern
 | [examples/hello](examples/hello) | make | ✅ all seven targets green |
 | [redis](redis) (7.2.7) | make | ✅ all seven + functional/cli variants; tcl suite tagged `requires-tclsh`; benchmark/sentinel/modules not in Bazel build yet |
 | [rmux](rmux) (0.5.0) | cargo | ✅ all seven + functional variants for `--no-default-features`; upstream suite (3458 tests) wired on both sides, 5 tests excluded with reasons; web feature not built |
+| [shelley](shelley) (v0.684.965431717) | go | ⚠️ first Go slice: all seven targets for pure-Go `cmd/upgoer5check`, no upstream tests for that command; main UI-backed server awaits Node/pnpm capability |
 | [the_silver_searcher](the_silver_searcher) (2.2.0) | autotools/C | ✅ all seven; PCRE, zlib, and xz/liblzma built from pinned source; 39 upstream cram tests run on both sides; big/known-fail/style tests excluded with reasons |
 
 To add one, follow [docs/playbook.md](docs/playbook.md).

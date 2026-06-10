@@ -1,0 +1,81 @@
+# Public interface targets live here; shelley.BUILD.bazel is injected into
+# @shelley_src for the Bazel-native source build.
+
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+load("//tools:go.bzl", "legacy_go_binary")
+load("//tools:inventory.bzl", "upstream_inventory_test")
+load("//tools:parity.bzl", "parity_test")
+
+legacy_go_binary(
+    name = "legacy_build",
+    srcs = ["@shelley_src//:tree"],
+    go_mod = "@shelley_src//:go.mod",
+    out_binary = "upgoer5check",
+    package = "./cmd/upgoer5check",
+)
+
+alias(
+    name = "legacy_binary",
+    actual = ":legacy_build_upgoer5check",
+)
+
+alias(
+    name = "bazel_build",
+    actual = "@shelley_src//:upgoer5check",
+)
+
+alias(
+    name = "bazel_binary",
+    actual = "@shelley_src//:upgoer5check",
+)
+
+# Shelley does not ship upstream tests for cmd/upgoer5check. Keep the reserved
+# suite names present and empty; the executable behavior is covered by the
+# functional and parity tests below.
+test_suite(
+    name = "legacy_test",
+    tests = [],
+)
+
+test_suite(
+    name = "bazel_test",
+    tests = [],
+)
+
+sh_test(
+    name = "legacy_test_functional",
+    size = "small",
+    srcs = ["tests/upgoer5check_smoke.sh"],
+    data = [":legacy_binary"],
+    env = {"UPGOER5CHECK_BIN": "$(rootpath :legacy_binary)"},
+)
+
+sh_test(
+    name = "bazel_test_functional",
+    size = "small",
+    srcs = ["tests/upgoer5check_smoke.sh"],
+    data = [":bazel_binary"],
+    env = {"UPGOER5CHECK_BIN": "$(rootpath :bazel_binary)"},
+)
+
+parity_test(
+    name = "parity_test",
+    size = "small",
+    bazel_binary = ":bazel_binary",
+    cases_jsonl = "parity_cases.jsonl",
+    legacy_binary = ":legacy_binary",
+)
+
+upstream_inventory_test(
+    name = "upstream_inventory_test",
+    patterns = ["cmd/upgoer5check/main.go"],
+    repo_hint = "shelley_src",
+    tree = "@shelley_src//:tree",
+    wired = ["cmd/upgoer5check/main.go"],
+)
+
+filegroup(
+    name = "audit_srcs",
+    srcs = glob(["**"]),
+    visibility = ["//tools/audit:__pkg__"],
+)

@@ -6,8 +6,10 @@ load("@rules_python//python:defs.bzl", "py_test")
 AUDITED = [
     "//:audit_srcs",
     "//examples/hello:audit_srcs",
+    "//examples/hello-node:audit_srcs",
     "//redis:audit_srcs",
     "//rmux:audit_srcs",
+    "//shelley:audit_srcs",
     "//the_silver_searcher:audit_srcs",
     "//tools:audit_srcs",
     "//tools/cargo:audit_srcs",

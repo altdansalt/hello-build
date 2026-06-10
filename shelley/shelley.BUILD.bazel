@@ -1,0 +1,19 @@
+load("@rules_go//go:def.bzl", "go_binary")
+
+filegroup(
+    name = "tree",
+    srcs = glob(["**"]),
+    visibility = ["//visibility:public"],
+)
+
+exports_files([
+    "go.mod",
+])
+
+go_binary(
+    name = "upgoer5check",
+    srcs = ["cmd/upgoer5check/main.go"],
+    embedsrcs = ["cmd/upgoer5check/words.txt"],
+    importpath = "shelley.exe.dev/cmd/upgoer5check",
+    visibility = ["//visibility:public"],
+)
