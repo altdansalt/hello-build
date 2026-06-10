@@ -9,6 +9,10 @@ The repo documents itself: read these before changing anything.
   onboard a new repo**; do the steps in order, each lands in a working state
 - [docs/principles.md](docs/principles.md) — what counts as parity evidence;
   the legacy build is the spec; "normalization is a confession"
+- [docs/vision.md](docs/vision.md) — where this is going (a build compiler;
+  properties as ratchets; platforms). **Context, not tasking**: an
+  onboarding follows the playbook regardless; don't generalize toward
+  platforms/RBE/minimization unless your task explicitly says so (ADR 0011)
 - [docs/decisions/](docs/decisions/) — ADRs; add a numbered ADR for any
   non-obvious choice you make
 - [redis/](redis/) — the reference real-repo onboarding; [examples/hello/](examples/hello/)

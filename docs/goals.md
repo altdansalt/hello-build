@@ -4,6 +4,11 @@ Build a reusable toolkit, and a body of worked examples, for adding Bazel
 build and test targets to repos that don't use Bazel — such that the Bazel
 build is *demonstrably* functionally equivalent to the original build.
 
+This is the first application of a larger ambition — a **build compiler**
+that transforms builds while preserving testable behavior; see
+[vision.md](vision.md) (ADR 0011). This file stays operational: what to
+onboard next and what the tooling owes us.
+
 1. **Tools**: generic wrappers for running legacy builds inside Bazel
    (`tools/make.bzl`, more build systems as needed) and for proving parity
    (`tools/parity.bzl`). These should get sharper with every repo onboarded.

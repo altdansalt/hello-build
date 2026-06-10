@@ -5,7 +5,10 @@ repos — with **evidence that the Bazel build and the original build are
 functionally equivalent**.
 
 This repo is the source of truth for its own goals, decisions, principles,
-tests, and code. Start here, then see [docs/](docs/).
+tests, and code. Start here, then see [docs/](docs/). The larger ambition —
+a **build compiler**: transform a build into another build with the same
+testable output, with Bazel as the first backend — is laid out in
+[docs/vision.md](docs/vision.md).
 
 ## The pattern
 
@@ -57,7 +60,7 @@ bazel run  //examples/hello:bazel_binary  -- you
 ## Layout
 
 ```
-docs/               goals, principles, decision log, onboarding playbook
+docs/               vision, goals, principles, decision log, onboarding playbook
 tools/              shared Starlark + scripts (legacy_make, legacy_cargo,
                     parity_test, opt_binary); tools/audit/ holds the
                     repo-wide host-baseline and onboarding-contract tests
