@@ -1,0 +1,11 @@
+# Upstream tcl files not run by legacy_test/bazel_test, with reasons
+# (checked by :upstream_inventory_test; format "<glob> <reason>").
+# Wired units take precedence over these globs, so the catch-alls below
+# excuse only what TCL_UNIT_LIST does not already run.
+tests/integration/*.tcl multi-instance integration tier (replication, AOF, psync, failover, benchmark/cli): slow and partly flaky-by-design (kill/restart loops); opt-in tier tracked in docs/goals.md
+tests/unit/cluster/*.tcl cluster mode is not exercised; this onboarding runs single-instance configurations only
+tests/unit/moduleapi/*.tcl requires building tests/modules/*.so; module support is not in the Bazel build (README known gaps)
+tests/unit/type/list-common.tcl helper sourced by the list units, not a standalone unit
+tests/unit/tls.tcl needs a BUILD_TLS=yes build; TLS is not built on either side
+tests/unit/*.tcl remaining single-instance units, not yet evaluated for sandbox determinism and runtime; the wired ten are the evaluated deterministic core, expansion tracked in docs/goals.md
+tests/unit/type/*.tcl remaining type units (list-2/3, stream, stream-cgroups), same as above: not yet evaluated, tracked in docs/goals.md

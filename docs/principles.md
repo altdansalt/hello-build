@@ -53,6 +53,11 @@ from becoming true again (`//tools/audit`, `parity_runner_test`; ADR 0009,
 ADR 0010). A claim that cannot be tested is written down as an intention,
 where the next reader will find it.
 
+A green that counted nothing is not evidence: harnesses fail when zero
+units were verified, suite subsets are reconciled against the upstream
+tree, and hand-written harnesses must demonstrably go red on a wrong
+binary (ADR 0015).
+
 ## Hermeticity, honestly
 
 - The **Bazel-native** build should be as hermetic as Bazel allows.

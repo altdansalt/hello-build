@@ -5,6 +5,7 @@
 # See redis/README.md for what each target covers and the parity story.
 
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
+load("//tools:inventory.bzl", "upstream_inventory_test")
 load("//tools:make.bzl", "legacy_make")
 load("//tools:parity.bzl", "parity_test")
 
@@ -79,7 +80,7 @@ alias(
 # Units chosen to exercise the core engine, every collection type, expiry,
 # and the embedded lua scripting; ~15s wall clock. The full suite also has
 # integration/* (replication, cluster) — future work, see README.
-TCL_UNITS = " ".join([
+TCL_UNIT_LIST = [
     "unit/type/string",
     "unit/type/incr",
     "unit/type/list",
@@ -90,7 +91,9 @@ TCL_UNITS = " ".join([
     "unit/keyspace",
     "unit/auth",
     "unit/scripting",
-])
+]
+
+TCL_UNITS = " ".join(TCL_UNIT_LIST)
 
 sh_test(
     name = "legacy_test",
@@ -186,4 +189,18 @@ filegroup(
     name = "audit_srcs",
     srcs = glob(["**"]),
     visibility = ["//tools/audit:__pkg__"],
+)
+
+# Every upstream tcl unit/integration file is either in TCL_UNIT_LIST or
+# excluded with a reason — reconciled against the fetched tree (ADR 0015).
+upstream_inventory_test(
+    name = "upstream_inventory_test",
+    exclusions_file = "upstream_inventory_exclusions.txt",
+    patterns = [
+        "tests/integration/**/*.tcl",
+        "tests/unit/**/*.tcl",
+    ],
+    repo_hint = "redis_src",
+    tree = "@redis_src//:tree",
+    wired = ["tests/%s.tcl" % u for u in TCL_UNIT_LIST],
 )

@@ -1,0 +1,4 @@
+# Upstream .t files not run by legacy_test/bazel_test, with reasons
+# (checked by :upstream_inventory_test; format "<glob> <reason>").
+tests/big/*.t creates a multi-gigabyte sparse test file; opt-in stress tier candidate, not for default bazel test //...
+tests/fail/*.t upstream keeps these under tests/fail as documented known-failing behavior, not expected passes

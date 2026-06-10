@@ -81,6 +81,23 @@ class CramRunnerTest(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             self.run_one("Just prose, no commands.\n")
 
+    def test_all_skipped_invocation_fails(self):
+        skip = write(self.root / "tests", "skip.t", "  $ exit 80\n")
+        ok = write(self.root / "tests", "ok.t", "  $ echo hi\n  hi\n")
+        binary = write(self.root, "bin", "#!/bin/sh\nexit 0\n")
+        os.chmod(binary, 0o755)
+        argv_all_skip = ["prog", "--binary", str(binary), "--setup",
+                         str(self.root / "tests" / "skip.t"), str(skip)]
+        argv_mixed = argv_all_skip + [str(ok)]
+        old = sys.argv
+        try:
+            sys.argv = argv_all_skip
+            self.assertEqual(cram_runner.main(), 1)
+            sys.argv = argv_mixed
+            self.assertEqual(cram_runner.main(), 0)
+        finally:
+            sys.argv = old
+
 
 if __name__ == "__main__":
     unittest.main()

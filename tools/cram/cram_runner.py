@@ -1,8 +1,10 @@
-"""Small runner for the upstream the_silver_searcher cram suite.
+"""Minimal runner for upstream cram-format (`.t`) test suites.
 
-It implements the subset used by the 2.2.0 `.t` files: persistent POSIX shell
-commands, continuation lines, exit-status markers, and `(re)`/`(glob)` output
-checks. The test files themselves stay unchanged.
+It implements the commonly used subset: persistent POSIX shell commands,
+continuation lines, exit-status markers (incl. the exit-80 skip convention),
+and `(re)`/`(glob)`/`(esc)` output checks. The upstream test files stay
+unchanged. Refusals to pass vacuously: a `.t` parsing to zero commands is an
+error, and an invocation where every test skipped fails (ADR 0015).
 """
 
 import argparse
@@ -177,6 +179,9 @@ def main():
         print(f"skipped {name}")
     if failures:
         print("\n\n".join(failures))
+        return 1
+    if len(skipped) == len(args.tests):
+        print("every test skipped — nothing verified is not a pass")
         return 1
     print(f"passed {len(args.tests) - len(skipped)} cram tests")
     return 0

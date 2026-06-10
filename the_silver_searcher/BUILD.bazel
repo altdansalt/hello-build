@@ -1,5 +1,7 @@
 load("@rules_python//python:defs.bzl", "py_test")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load("//tools:autotools.bzl", "configure_make")
+load("//tools:inventory.bzl", "upstream_inventory_test")
 load("//tools:parity.bzl", "parity_test")
 
 UPSTREAM_TESTS = [
@@ -89,8 +91,8 @@ alias(
 py_test(
     name = "legacy_test",
     size = "medium",
-    srcs = ["tests/cram_runner.py"],
-    main = "tests/cram_runner.py",
+    srcs = ["//tools/cram:cram_runner.py"],
+    main = "cram_runner.py",
     args = [
         "--binary",
         "$(rootpath :legacy_binary)",
@@ -113,8 +115,8 @@ py_test(
 py_test(
     name = "bazel_test",
     size = "medium",
-    srcs = ["tests/cram_runner.py"],
-    main = "tests/cram_runner.py",
+    srcs = ["//tools/cram:cram_runner.py"],
+    main = "cram_runner.py",
     args = [
         "--binary",
         "$(rootpath @the_silver_searcher_src//:ag)",
@@ -134,16 +136,35 @@ py_test(
     ],
 )
 
-# The cram runner is load-bearing for both suites above; this asserts its
-# claims against synthetic .t fixtures (ADR 0010).
-py_test(
-    name = "cram_runner_test",
+# Every upstream .t is either wired above or excluded with a reason —
+# reconciled against the fetched tree, so a dropped test is red, not prose
+# (ADR 0015).
+upstream_inventory_test(
+    name = "upstream_inventory_test",
+    exclusions_file = "upstream_inventory_exclusions.txt",
+    patterns = ["tests/**/*.t"],
+    repo_hint = "the_silver_searcher_tests_src",
+    tree = "@the_silver_searcher_tests_src//:tests",
+    wired = ["tests/%s" % t for t in UPSTREAM_TESTS],
+)
+
+# Polarity check (ADR 0015): the wired suite must FAIL when pointed at the
+# wrong binary; a harness that can't go red is not evidence.
+sh_test(
+    name = "suite_polarity_test",
     size = "small",
-    srcs = [
-        "tests/cram_runner.py",
-        "tests/cram_runner_test.py",
+    srcs = ["tests/suite_polarity.sh"],
+    data = [
+        "//tools/cram:cram_runner",
+        "@the_silver_searcher_tests_src//:tests",
+        "@the_silver_searcher_tests_src//:tests/count.t",
+        "@the_silver_searcher_tests_src//:tests/setup.sh",
     ],
-    main = "tests/cram_runner_test.py",
+    env = {
+        "CRAM_RUNNER": "$(rootpath //tools/cram:cram_runner)",
+        "SETUP": "$(rootpath @the_silver_searcher_tests_src//:tests/setup.sh)",
+        "TEST_T": "$(rootpath @the_silver_searcher_tests_src//:tests/count.t)",
+    },
 )
 
 parity_test(

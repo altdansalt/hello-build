@@ -11,6 +11,7 @@ AUDITED = [
     "//the_silver_searcher:audit_srcs",
     "//tools:audit_srcs",
     "//tools/cargo:audit_srcs",
+    "//tools/cram:audit_srcs",
     "//tools/parity:audit_srcs",
 ]
 
@@ -19,6 +20,9 @@ filegroup(
     srcs = glob(["*"]),
     visibility = ["//visibility:public"],
 )
+
+# Consumed by tools/inventory.bzl%upstream_inventory_test in repo packages.
+exports_files(["upstream_inventory.py"])
 
 py_test(
     name = "host_baseline_test",

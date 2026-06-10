@@ -93,6 +93,12 @@ def main():
                         f"{repo}/BUILD.bazel: interface target '{target}' is not "
                         "defined (docs/decisions/0001; alias/test_suite is fine)"
                     )
+            if 'name = "upstream_inventory_test"' not in build:
+                errors.append(
+                    f"{repo}/BUILD.bazel: missing upstream_inventory_test — the "
+                    "wired suite subset must be reconciled against the fetched "
+                    "upstream tree (tools/inventory.bzl, ADR 0015)"
+                )
             for src_repo in set(re.findall(r"@([\w-]+_src)//", build)):
                 upstream = read(f"{repo}/UPSTREAM", errors)
                 if upstream is not None:

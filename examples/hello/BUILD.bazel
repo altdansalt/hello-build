@@ -12,6 +12,7 @@
 
 load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
+load("//tools:inventory.bzl", "upstream_inventory_test")
 load("//tools:make.bzl", "legacy_make")
 load("//tools:parity.bzl", "parity_test")
 
@@ -78,4 +79,19 @@ filegroup(
     name = "audit_srcs",
     srcs = glob(["**"]),
     visibility = ["//tools/audit:__pkg__"],
+)
+
+# Trivial here (one suite script), but uniform: every onboarded repo
+# reconciles its wired upstream tests against the upstream tree (ADR 0015).
+filegroup(
+    name = "upstream_test_files",
+    srcs = glob(["upstream/tests/**"]),
+)
+
+upstream_inventory_test(
+    name = "upstream_inventory_test",
+    patterns = ["examples/hello/upstream/tests/*.sh"],
+    repo_hint = "_main",
+    tree = ":upstream_test_files",
+    wired = ["examples/hello/upstream/tests/run_tests.sh"],
 )

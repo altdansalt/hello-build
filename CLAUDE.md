@@ -33,7 +33,11 @@ The repo documents itself: read these before changing anything.
 - **`legacy_test`/`bazel_test` run the UPSTREAM suite** — a documented
   subset is fine, a suite you wrote yourself is not (name those
   `*_test_functional`; they are parity evidence, not upstream coverage).
-  Every excluded upstream test gets a written reason.
+  The subset is reconciled against the fetched tree by the repo's
+  `upstream_inventory_test` (tools/inventory.bzl, ADR 0015) — every
+  excluded upstream test gets a written reason in the exclusions file,
+  and a hand-written harness gets a polarity canary (it must fail on a
+  wrong binary) plus its own regression test in tools/.
 - **Mirror the legacy build's profile, not just its flags** (ADR 0008).
   Profiles change behavior (Rust debug_assertions/overflow checks, C
   `-DNDEBUG`). For a release-profile legacy binary, wrap the Bazel binary

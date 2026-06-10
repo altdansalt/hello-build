@@ -4,6 +4,7 @@
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load("//tools:cargo.bzl", "legacy_cargo", "legacy_cargo_test")
 load("//tools:compilation_mode.bzl", "opt_binary")
+load("//tools:inventory.bzl", "upstream_inventory_test")
 load("//tools:parity.bzl", "parity_test")
 load(":tests.bzl", "RMUX_FLAKY_SKIPS", "RMUX_INTEGRATION_TESTS", "RMUX_LIB_TESTS")
 load(":vendor_crates.bzl", "RMUX_VENDOR_CRATES")
@@ -112,6 +113,17 @@ parity_test(
     bazel_binary = ":bazel_binary",
     cases_jsonl = "parity_cases.jsonl",
     legacy_binary = ":legacy_binary",
+)
+
+# Every upstream tests/*.rs is wired into :bazel_test (and :legacy_test runs
+# the whole workspace via cargo); reconciled against the fetched tree so a
+# version bump's new tests surface as red (ADR 0015).
+upstream_inventory_test(
+    name = "upstream_inventory_test",
+    patterns = ["tests/*.rs"],
+    repo_hint = "rmux_src",
+    tree = "@rmux_src//:tree",
+    wired = ["tests/%s.rs" % t for t in RMUX_INTEGRATION_TESTS],
 )
 
 filegroup(

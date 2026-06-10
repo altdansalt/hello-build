@@ -27,11 +27,15 @@ profile, not Bazel opt.
 The 2.2.0 official release tarball includes generated autotools files but omits
 the `tests/` directory, so tests are fetched from the matching GitHub 2.2.0 tag.
 `legacy_test` and `bazel_test` run all **41** upstream top-level `tests/*.t`
-files unchanged through `tests/cram_runner.py`, a small runner for the cram
-features used by this suite (the runner has its own regression test,
-`:cram_runner_test`, per ADR 0010; a `.t` file that parses to zero commands is
-an error, so the suite cannot pass vacuously). `one_device.t` self-skips via
-cram's exit-80 convention when `/dev/shm` is not a separate device.
+files unchanged through `//tools/cram:cram_runner`, a minimal runner for the
+cram features this suite uses. Three guardrails back the claim (ADR 0015):
+`:upstream_inventory_test` reconciles the wired list against the fetched tree
+(a dropped or newly-added upstream test is red, not prose);
+`//tools/cram:cram_runner_test` pins the runner's semantics, which refuse
+vacuous green (zero parsed commands is an error, all-skipped fails); and
+`:suite_polarity_test` proves the wiring fails on a wrong binary.
+`one_device.t` self-skips via cram's exit-80 convention when `/dev/shm` is not
+a separate device.
 
 Excluded upstream tests:
 

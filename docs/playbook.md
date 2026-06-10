@@ -142,6 +142,16 @@ Use this path for generated-`configure` projects (ADR 0012):
 - If the full suite is too slow/flaky/host-dependent, run the largest stable
   subset and document exactly what is excluded and why in the README's
   "Upstream suite" section (enforced by `//tools/audit:repo_contract_test`).
+- Add an `upstream_inventory_test` (tools/inventory.bzl, ADR 0015): it
+  reconciles the wired list against the fetched tree, so a dropped test or
+  a version bump's new tests fail loudly. Derive its `wired` list from the
+  same variable the suite targets use; unwired files go in the exclusions
+  file with reasons.
+- If upstream's harness is outside the host baseline and you write a
+  minimal replacement (e.g. tools/cram), it lives in `tools/` with its own
+  regression test, and the repo gets a polarity canary: one real upstream
+  test run against a wrong binary must FAIL (see
+  the_silver_searcher:suite_polarity_test).
 - The names `legacy_test`/`bazel_test` are reserved for upstream's own
   tests. A portable functional suite you write is valuable — as the parity
   suite and as `*_test_functional` targets — but it is not upstream

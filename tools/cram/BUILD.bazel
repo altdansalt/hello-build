@@ -1,0 +1,30 @@
+load("@rules_python//python:defs.bzl", "py_binary", "py_test")
+
+# Minimal cram-format runner (the upstream .t test format used by
+# the_silver_searcher, mercurial, and others). Lives in tools/ because any
+# checked-in harness that executes upstream suites is shared infrastructure
+# and must test its claims (ADR 0010, ADR 0015). Runs on the hermetic
+# rules_python toolchain.
+py_binary(
+    name = "cram_runner",
+    srcs = ["cram_runner.py"],
+    visibility = ["//visibility:public"],
+)
+
+exports_files(["cram_runner.py"])
+
+py_test(
+    name = "cram_runner_test",
+    size = "small",
+    srcs = [
+        "cram_runner.py",
+        "cram_runner_test.py",
+    ],
+    main = "cram_runner_test.py",
+)
+
+filegroup(
+    name = "audit_srcs",
+    srcs = glob(["**"]),
+    visibility = ["//tools/audit:__pkg__"],
+)
