@@ -238,6 +238,11 @@ Use this path for Cargo workspaces (ADR 0007):
 - Update the table in the root README, and wire the repo's `audit_srcs`
   filegroup into `//tools/audit` (the contract test fails until you do).
   New generic lessons go to `docs/decisions/` or `tools/`.
+- Write the port's run report in `docs/ports/<repo>.md` (template in
+  [docs/ports/README.md](ports/README.md)): who/what ran the port,
+  wall-clock, what broke, review findings, residue. Run data is a
+  deliverable — porting runs are additive only if they leave data behind
+  (ADR 0018).
 
 ## Definition of done
 

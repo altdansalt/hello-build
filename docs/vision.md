@@ -90,6 +90,10 @@ toward:
   plausible shape: a tool that bisects the dependency closure against the
   parity suite.
 
+What is *not* a target: a self-serve `port <git-url>` tool for arbitrary
+repos. The compiler's user interface is this repo — the playbook plus an
+agent (ADR 0018).
+
 ## What this means for an onboarding agent: nothing new
 
 The ambitions above do not change the job of porting a repo. Follow the

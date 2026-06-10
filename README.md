@@ -52,6 +52,7 @@ the stable public interface.
 
 ```sh
 bazel test //...                                # everything (first run fetches pinned deps)
+bazel test //... --config=public                # same, with a shareable BuildBuddy invocation link
 bazel test //examples/hello:parity_test        # the canonical example
 bazel build //examples/hello-node:dist         # pinned Node action smoke build
 bazel run  //examples/hello:legacy_binary -- you
@@ -61,7 +62,8 @@ bazel run  //examples/hello:bazel_binary  -- you
 ## Layout
 
 ```
-docs/               vision, goals, principles, decision log, onboarding playbook
+docs/               vision, goals, principles, decision log, onboarding
+                    playbook, per-port run reports (docs/ports/)
 tools/              shared Starlark + scripts (legacy_make, legacy_cargo,
                     parity_test, opt_binary); tools/audit/ holds the
                     repo-wide host-baseline and onboarding-contract tests

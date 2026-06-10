@@ -6,21 +6,46 @@ build is *demonstrably* functionally equivalent to the original build.
 
 This is the first application of a larger ambition — a **build compiler**
 that transforms builds while preserving testable behavior; see
-[vision.md](vision.md) (ADR 0011). This file stays operational: what to
-onboard next and what the tooling owes us.
+[vision.md](vision.md) (ADR 0011). This file stays operational: what the
+project delivers, what to onboard next, and what the tooling owes us.
 
-1. **Tools**: generic wrappers for running legacy builds inside Bazel
-   (`tools/make.bzl`, more build systems as needed) and for proving parity
-   (`tools/parity.bzl`). These should get sharper with every repo onboarded.
-2. **Examples**: real repos (ripgrep, redis, tmux, the_silver_searcher, ...)
-   onboarded end-to-end under the seven-target interface (ADR 0001).
-3. **Evidence**: `parity_test` targets whose passing actually means
-   something — see docs/principles.md for what counts.
-4. **Hermetic actions**: any host with the pinned Bazel + cc + make + sh
-   can run everything; actions never touch the network, fetches are pinned
-   (ADR 0006).
-5. **A written record**: this repo documents its own goals, principles,
-   decisions, and per-repo findings as they happen.
+## Deliverables
+
+Four distinct things that share artifacts (ADR 0018):
+
+1. **The product: the toolkit.** `tools/` wrappers, the
+   [playbook](playbook.md), the contract tests, and the
+   [decision log](decisions/) — the thing that gets sharper with every
+   port and makes the next one cheap. The ADRs are part of the product:
+   they are what makes "an agent plus a one-line prompt" reproducible
+   rather than lucky.
+2. **The proof: parity evidence.** `parity_test` targets whose passing
+   actually means something ([principles.md](principles.md)), kept honest
+   by the guardrails: inventory reconciliation, polarity canaries, profile
+   mirroring, hermetic actions (ADR 0006), the host-baseline audit.
+3. **The artifacts: the ports.** Honest Bazel builds of real repos. Each
+   port is three things at once — a usable artifact, a permanent
+   regression test for the toolkit (`bazel test //...` keeps every port
+   green forever), and training data for the next port (its run report in
+   [ports/](ports/)).
+4. **The showcase: shareable evidence.** The public repo, and per-port
+   evidence links — a green `bazel test //...` invocation shared via
+   `--config=public` (.bazelrc), the commit range, the run report.
+
+The porting *process* — the owner invoking agents, reviewing, harvesting —
+is the operating loop, not a deliverable; what it leaves behind are the
+four above.
+
+## Non-goals (ADR 0018)
+
+- **No self-serve tool for arbitrary repos.** There is no
+  `port <git-url>` command and none is planned. The interface for porting
+  a new repo is this repo: the playbook plus an agent, with the contract
+  tests as the safety net.
+- **Porting runs are not showcased.** A port is an agent session, not a
+  Bazel invocation; session links and transcripts are not published. What
+  gets shown is the port's evidence: the green run, the commits, the run
+  report.
 
 ## Choosing the next repo
 
