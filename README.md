@@ -89,3 +89,13 @@ consumers/hello-standalone/  standalone workspace consuming hello_build as
 | [the_silver_searcher](the_silver_searcher) (2.2.0) | autotools/C | ✅ all seven; PCRE, zlib, and xz/liblzma built from pinned source; 39 upstream cram tests run on both sides; big/known-fail/style tests excluded with reasons |
 
 To add one, follow [docs/playbook.md](docs/playbook.md).
+
+## Fleet ports
+
+Standalone workspaces consuming `hello_build` as an external module —
+paved-path validation runs of the [porting skill](skills/port-to-bazel/SKILL.md)
+plus tooling (ADR 0019). Each links its own public test invocation:
+
+| Port | Upstream | Path | Evidence |
+|---|---|---|---|
+| [fleet-gnu-hello](https://github.com/altdansalt/fleet-gnu-hello) | GNU hello 2.12.3 | autotools/C | [6/6 tests](https://app.buildbuddy.io/invocation/b10b54f0-11e4-4c17-9fea-3a8b42036bda) |

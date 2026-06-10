@@ -132,12 +132,15 @@ upstream_inventory_test(
 )
 ```
 
-If you had to write a replacement harness for upstream's (e.g. its runner
-isn't in the host baseline), it also needs a **polarity canary**: one real
-upstream test run against a deliberately wrong binary (`/bin/true`) in an
-`sh_test` that asserts the suite FAILS. A harness that cannot go red is
-not evidence. Check whether `@hello_build//tools/cram` already covers
-your format before writing anything.
+If you had to write a replacement harness or driver for upstream's (e.g.
+its runner isn't in the host baseline), two rules apply. It needs a
+**polarity canary**: one real upstream test run against a deliberately
+wrong binary (`/bin/true`) in an `sh_test` that asserts the suite FAILS —
+a harness that cannot go red is not evidence. And it must **refuse
+vacuous green**: zero tests found/parsed is an error, and a run where
+every test skipped fails ("nothing verified is not a pass") — count
+passes and require at least one. Check whether `@hello_build//tools/cram`
+already covers your format before writing anything.
 
 README.md must have these sections (port_contract_test enforces):
 **Targets**, **Build profile**, **Upstream suite** (what runs, what's
