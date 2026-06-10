@@ -28,6 +28,19 @@ the first Cargo onboarding should prove "pinned Cargo workspace to Bazel binary
 plus parity" before taking on a project that also needs a web asset pipeline,
 code generators, or multiple platform-specific native libraries.
 
+[docs/goals.md](goals.md) has the candidate shortlist and the selection
+criteria. Two of them are checked here, before any other work:
+
+- **No-op check**: if the upstream tree already has first-class Bazel
+  support (`MODULE.bazel`/`WORKSPACE`, BUILD files, Bazel in their CI),
+  stop — there is nothing to compile; pick another candidate.
+- **Be ambitious in capability, conservative in size.** Every step below
+  lands in a working state, so a hard port that stalls still leaves the
+  repo green — but an easy port down an already-paved path proves nothing.
+  If your candidate needs no new wrapper and no new ADR, question the
+  choice (one reusability proof per build system is the documented
+  exception).
+
 ## 0.5. Scout outside Bazel first (cheap iteration)
 
 Before writing any BUILD file, prove the upstream build invocation and tests in

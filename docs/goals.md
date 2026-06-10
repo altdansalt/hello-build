@@ -22,26 +22,69 @@ onboard next and what the tooling owes us.
 5. **A written record**: this repo documents its own goals, principles,
    decisions, and per-repo findings as they happen.
 
+## Choosing the next repo
+
+Every port must earn its place in exactly one of two ways:
+
+1. **A new generic capability** — a build system or build feature the
+   toolkit can't handle yet (configure steps, C dependencies built from
+   pinned source, code generators, a new language toolchain). The deliverable
+   is the `tools/` wrapper and ADR as much as the port itself.
+2. **A reusability proof** — re-running an *existing* path on a foreign
+   repo to show the tooling generalizes (e.g. a second Cargo port after
+   rmux). Worth doing **once per build system**; a third repo down a paved
+   path proves nothing new.
+
+How to calibrate difficulty — and this is the part to get right:
+
+- **Be ambitious in capability, conservative in size.** Pick a repo that is
+  hard along *one* new axis and familiar along every other. The failure
+  mode to avoid is not "too hard" — the playbook lands a working state at
+  every step, the contract tests catch dishonest shortcuts, and an
+  abandoned port costs nothing but a branch. The failure mode to avoid is
+  **too easy**: a port that needs no new wrapper, no new ADR, and no
+  playbook edit teaches the toolkit nothing.
+- If two candidates exercise the same capability, take the smaller one.
+- **Check the upstream test suite during scouting (step 0.5), before
+  committing.** A repo with a thin or absent suite makes weak parity
+  evidence no matter how clean the build port is; prefer the candidate
+  whose suite gives the oracle teeth.
+
+**No-op rule:** a repo where upstream already maintains Bazel as a
+first-class build (BUILD files at the root, Bazel in their CI — grpc,
+protobuf, codex) is not a porting target; there is nothing to compile.
+Check for this *first* in step 0 — `MODULE.bazel`/`WORKSPACE` in the
+upstream tree disqualifies. (The only interesting work in such repos is
+the inverse — parity between *their* Bazel build and *their* legacy build —
+which is a different, lower-priority exercise; don't drift into it by
+accident.)
+
 ## Candidate repos
 
-From the project brief, roughly easiest-first within each build system:
+Next up, in rough order of what they prove:
 
-- **make/C**: redis (self-contained deps — first real target),
-  the_silver_searcher (autotools + system libs), tmux (libevent/ncurses),
-  JuliaLang/julia (huge)
-- **cargo/Rust**: ripgrep (first cargo target — rules_rust + crate fetching
-  are fine under ADR 0006, all pinned by lockfile), uv, ruff, deno, zed,
-  bun, rust-lang/rust
-- **cmake**: neovim, llvm-project, ClickHouse
-- **go**: shelley, grafana, prometheus, kubernetes, moby
-- **zig**: ziglang/zig, ghostty
-- **npm/yarn**: TypeScript, excalidraw, react, opencode
-- **already bazel** (parity between *their* bazel and legacy/alt builds, or
-  N/A): grpc, protobuf, codex
+- **the_silver_searcher** (autotools/C) — new capability: the
+  `./configure` step and C dependencies (pcre, lzma, zlib) built from
+  pinned source instead of found on the host. Small. The natural warm-up
+  for tmux and the cmake family.
+- **tmux** (autotools/C, libevent + ncurses) — same capability class,
+  bigger deps; do it second if ag goes well, or first if its suite is
+  stronger (check in step 0.5).
+- **shelley or another small Go repo** — new capability: rules_go +
+  Gazelle, go.mod pinning, `go test` on both sides. Likely the gentlest
+  new-language port; grafana/prometheus/kubernetes/moby wait behind it.
+- **ripgrep** (cargo) — reusability proof for the rmux tooling on foreign
+  code (build scripts, feature matrix). Cheap; reasonable as a second
+  concurrent port, not as the only next port.
+- **cmake tier**: neovim, llvm-project, ClickHouse — a major new wrapper;
+  attempt after autotools has shaken out the configure-step patterns.
+- **Deferred**: zig (ruleset maturity), npm/yarn ecosystems (TypeScript,
+  excalidraw, react, opencode — heavy, output-parity story needs design),
+  julia / rust-lang/rust / bun / deno / zed / uv / ruff (big or paved-path),
+  already-Bazel repos (no-op rule above).
 
-Expect new requirements to emerge per build system (e.g. cargo's lockfile
-vs our vendoring; cmake's configure step; go's module cache). Each becomes
-an ADR or a tools/ wrapper.
+Expect new requirements to emerge per build system (e.g. cmake's configure
+step; go's module cache). Each becomes an ADR or a tools/ wrapper.
 
 ## Cargo tooling from rmux
 
@@ -60,6 +103,11 @@ an ADR or a tools/ wrapper.
 
 ## Backlog
 
+- **RBE** (next after 1–2 more ports, per the owner): the ratchet is a CI
+  run with a remote executor (vision.md). Per-port there is nothing extra
+  to do — the existing hermeticity rules are the preparation; the
+  host-baseline shrink work (below) removes the remaining
+  host-toolchain assumptions RBE would trip on.
 - A minimal in-repo Cargo example (`examples/hello-cargo`): the fast
   regression test for `tools/cargo.bzl` and `opt_binary`, so tooling changes
   don't need a multi-minute rmux rebuild to validate (ADR 0010 names this as
