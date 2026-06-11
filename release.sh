@@ -27,10 +27,26 @@ repo_root=$(git -C "$(dirname "$0")" rev-parse --show-toplevel)
 cd "$repo_root"
 
 [ -z "$(git status --porcelain)" ] || { echo "working tree not clean" >&2; exit 1; }
-# Check the module() block specifically — MODULE.bazel is full of crate
-# version lines an unanchored grep can match (the v0.2.1 incident).
-sed -n '/^module(/,/^)/p' MODULE.bazel | grep -qF "version = \"$version\"" || {
-  echo "MODULE.bazel module() version is not $version — bump it first" >&2; exit 1; }
+
+# release.sh owns the version bump, anchored to the module() block.
+# MODULE.bazel is full of crate version lines: an unanchored grep matched
+# one (the v0.2.1 incident), and an unanchored replace corrupted one (the
+# utf8parse 0.2.3 incident). Hands stay off.
+if ! sed -n '/^module(/,/^)/p' MODULE.bazel | grep -qF "version = \"$version\""; then
+  python3 - "$version" <<'PYEOF'
+import re, sys
+version = sys.argv[1]
+s = open("MODULE.bazel").read()
+new, n = re.subn(
+    r'(?m)^(module\(\n(?:    [^\n]*\n)*?    version = )"[^"]*"',
+    r'\1"%s"' % version, s, count=1)
+assert n == 1, "module() version line not found"
+open("MODULE.bazel", "w").write(new)
+PYEOF
+  git add MODULE.bazel
+  git commit -q -m "Release v$version"
+fi
+git push -q origin HEAD
 [ "$(git rev-parse HEAD)" = "$(git ls-remote origin HEAD | cut -f1)" ] || {
   echo "HEAD not pushed to origin" >&2; exit 1; }
 

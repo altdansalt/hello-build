@@ -65,6 +65,22 @@ LEGACY_WRAPPERS = [
     "legacy_make",
 ]
 
+# Bazel-native build rules. Defining a legacy_* target with one of these is
+# the same lie in the other direction: the "legacy" side is then a Bazel
+# build too, and parity_test compares Bazel with Bazel. Found in the wild
+# by the bzip2 haiku skill-robustness probe (2026-06-11), where
+# legacy_binary was a cc_binary of the upstream sources.
+NATIVE_RULES = [
+    "cc_binary",
+    "cc_library",
+    "cc_test",
+    "go_binary",
+    "go_library",
+    "py_binary",
+    "rust_binary",
+    "rust_library",
+]
+
 
 def runfile(path):
     return os.path.join(os.environ.get("TEST_SRCDIR", "."), "_main", path)
@@ -127,6 +143,17 @@ def check_port(repo, build, readme, upstream, upstream_missing_hint, errors):
                 "target — parity_test would compare the legacy build with "
                 "itself (ADR 0001)"
             )
+        for target in ("legacy_build", "legacy_binary", "legacy_test"):
+            m = re.search(r'(\w+)\(\s*name = "%s"' % target, build)
+            if m and m.group(1) in NATIVE_RULES:
+                errors.append(
+                    f"{repo}/BUILD.bazel: '{target}' is defined with "
+                    f"{m.group(1)} — a Bazel-native rule under a legacy "
+                    "name means the 'legacy' side is a Bazel build too, and "
+                    "parity_test compares Bazel with Bazel. legacy_* must "
+                    "run the unmodified upstream build/suite via the legacy "
+                    "wrappers (ADR 0001)"
+                )
         for src_repo in set(re.findall(r"@([\w-]+_src)//", build)):
             upstream_text = upstream(src_repo) if callable(upstream) else upstream
             if upstream_text is None:

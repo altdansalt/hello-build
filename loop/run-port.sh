@@ -41,4 +41,6 @@ wall=$(( $(date +%s) - start ))
 
 echo "exit=$status wall=${wall}s"
 "$(dirname "$0")/trace.sh" "$log" | tee "$runs_dir/$ts.$model.summary.md"
+{ echo; echo "## Acceptance"; echo; "$(dirname "$0")/accept.sh" "$name"; } \
+  2>&1 | tee -a "$runs_dir/$ts.$model.summary.md"
 exit $status

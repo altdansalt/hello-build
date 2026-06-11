@@ -1131,7 +1131,7 @@ crate.annotation(
     additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
     crate = "utf8parse",
     repositories = ["rmux_crates"],
-    version = "0.2.3",
+    version = "0.2.2",
 )
 crate.annotation(
     additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",

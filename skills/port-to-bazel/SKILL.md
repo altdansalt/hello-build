@@ -45,14 +45,17 @@ module's own docs (fetched with it, or on GitHub): `docs/playbook.md`
    MODULE.bazel. The baseline is cc, make, POSIX sh. An unavoidable extra
    host tool gets a `requires-<tool>` tag and a documented
    `--test_tag_filters` escape hatch.
-6. **`bazel_build` must be Bazel-native.** cc_binary, rust_binary,
-   go_binary, ... (wrapped in `opt_binary` when mirroring a release
-   profile). Running the upstream build system again under the `bazel_*`
-   names — configure_make, legacy_make, legacy_cargo — is not a port: it
-   makes `parity_test` compare the legacy build with itself, which is
-   evidence of nothing. The contract test rejects it. If a native build
-   can't land in your session, stop honestly with the legacy targets and
-   a "Known gaps" entry rather than aliasing the legacy build.
+6. **`bazel_build` must be Bazel-native, `legacy_build` must be the
+   upstream build.** bazel_* = cc_binary, rust_binary, go_binary, ...
+   (wrapped in `opt_binary` when mirroring a release profile); legacy_*
+   = the unmodified upstream build system and suite via the legacy
+   wrappers (legacy_make, configure_make, legacy_cargo, ...). Crossing
+   either way is not a port — running the upstream build under bazel_*
+   names, or compiling upstream sources with a cc_binary under legacy_*
+   names — because `parity_test` then compares a build with itself,
+   which is evidence of nothing. The contract test rejects both
+   directions. If a native build can't land in your session, stop
+   honestly with the legacy targets and a "Known gaps" entry.
 7. **Honest beats green.** A check you can't satisfy gets a written gap,
    not a workaround that hides it.
 
@@ -175,6 +178,13 @@ what broke, review findings, residue. Honest beats complete.
 including `port_contract_test`, `upstream_inventory_test`, and any
 polarity canary. Then produce the shareable evidence link:
 `bazel test //... --config=public` (prints a BuildBuddy invocation URL).
+
+The reviewer's acceptance gate requires `//:port_contract_test`,
+`//:upstream_inventory_test`, and `//:parity_test` to **exist** and the
+workspace to pass. A green `bazel test //...` in a workspace that never
+instantiated those judges is not a port and is rejected without review —
+if you cannot make them pass, leave them failing or absent and write
+the gap down, but never declare done.
 
 ## Gotchas that cost real debugging time
 

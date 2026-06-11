@@ -43,3 +43,12 @@ py_test(
     srcs = ["repo_contract_test.py"],
     data = ["//:README.md"] + AUDITED,
 )
+
+py_test(
+    name = "check_port_unit_test",
+    size = "small",
+    srcs = [
+        "check_port_unit_test.py",
+        "repo_contract_test.py",
+    ],
+)
