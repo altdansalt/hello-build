@@ -48,6 +48,17 @@ the stable public interface.
   onboarded repo to state its profile, upstream-suite coverage, parity
   evidence, and known gaps in its README.
 
+## Consume as a module
+
+Releases ship through a static registry (ADR 0023). In your `.bazelrc`:
+
+```
+common --registry=https://raw.githubusercontent.com/altdansalt/bazel-registry/main
+common --registry=https://bcr.bazel.build
+```
+
+then `bazel_dep(name = "hello_build", version = "0.2.0")`.
+
 ## Quick start
 
 ```sh
