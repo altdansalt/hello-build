@@ -192,6 +192,10 @@ polarity canary. Then produce the shareable evidence link:
   under Cargo but runfiles-relative under Bazel — tests that chdir before
   spawning need a documented skip; override `CARGO_MANIFEST_DIR` to the
   runfiles dir and put fixtures (and introspected sources) in `data`.
+- Upstream `XFAIL_TESTS` (automake expected-failures): don't exclude
+  them — give the driver XFAIL accounting (expected-fail passes the
+  suite, XPASS is an error). Reference implementation:
+  fleet-gnu-patch's tests/run_upstream_tests.sh.
 - Flaky upstream test: record it next to the target (symptom + date) →
   `flaky = True` on that one target if it recurs → documented skip if
   chronic. Never blanket retries.
