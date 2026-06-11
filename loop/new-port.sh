@@ -14,7 +14,8 @@ ws=$fleet_dir/$name
 repo_root=$(git -C "$(dirname "$0")" rev-parse --show-toplevel)
 registry=https://raw.githubusercontent.com/altdansalt/bazel-registry/main
 
-version=$(curl -fsS "$registry/modules/hello_build/metadata.json" | jq -r '.versions | last')
+version=$(curl -fsS "$registry/modules/hello_build/metadata.json" \
+  | jq -r '(.versions - (.yanked_versions | keys)) | last')
 [ -n "$version" ] && [ "$version" != null ] || { echo "no released version in registry" >&2; exit 1; }
 git -C "$repo_root" fetch -q --tags origin
 skill=$(git -C "$repo_root" show "v$version:skills/port-to-bazel/SKILL.md") || {
