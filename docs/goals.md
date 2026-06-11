@@ -112,8 +112,12 @@ ports: see the root README index. The ladder over the interesting list
   autotools.
 - **ninja** — capability: cmake (legacy side wrapper + native C++ build);
   unblocks the neovim/llvm/ClickHouse tier.
-- **cpython** — expedition: scale + regrtest-as-oracle; expect the probe
-  to be rejected and to name the unlocks.
+- **cpython** — rung 1 DONE (2026-06-11, expedition-cpython): legacy
+  build + 351-test regrtest slice green inside Bazel; native walls
+  ranked. Next rung: the make-V=1 → srcs.bzl extractor (capability, now
+  named by two whales — coreutils and cpython — making it a top backlog
+  item with absolute-CARGO_BIN_EXE), then a native core-interpreter
+  slice.
 - **neovim** — expedition after ninja's cmake wrapper exists (owner:
   likely more achievable than it looks).
 - **excalidraw/react/opencode tier** — expedition: the pnpm graph wall

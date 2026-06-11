@@ -90,6 +90,16 @@ consumers/hello-standalone/  standalone workspace consuming hello_build as
 
 To add one, follow [docs/playbook.md](docs/playbook.md).
 
+## Expeditions
+
+Probes sent at the frontier (ADR 0020): the deliverable is the run
+report — ranked walls, named unlocks. Rejections are recorded output.
+
+| Expedition | Result | Report |
+|---|---|---|
+| [expedition-cpython](https://github.com/altdansalt/expedition-cpython) (3.14.6) | rung 1 green: legacy build + [351-test regrtest slice](https://app.buildbuddy.io/invocation/8df21455-1f18-4245-a9f9-f04dec589fa2) inside Bazel; native walls ranked | [run report](docs/ports/cpython-probe.md) |
+| coreutils 9.8 | rejected (vacuous bazel_build) → contract check + skill rule | [run report](docs/ports/fleet-gnu-coreutils.md) |
+
 ## Fleet ports
 
 Standalone workspaces consuming `hello_build` as an external module —
