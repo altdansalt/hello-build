@@ -27,6 +27,16 @@ python.toolchain(
 
 http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
+# Pinned CMake for tools/cmake.bzl%legacy_cmake (ADR 0021): legacy cmake
+# builds use this official binary release, never a host cmake.
+http_archive(
+    name = "cmake_linux_x86_64",
+    build_file = "//tools:cmake.BUILD.bazel",
+    sha256 = "927b2368a946c37269c3a66225ab00544e756459cdd0b5d0da438694fb9ff802",
+    strip_prefix = "cmake-4.3.3-linux-x86_64",
+    url = "https://cmake.org/files/v4.3/cmake-4.3.3-linux-x86_64.tar.gz",
+)
+
 http_archive(
     name = "the_silver_searcher_src",
     build_file = "//the_silver_searcher:the_silver_searcher.BUILD.bazel",

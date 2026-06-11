@@ -1,6 +1,7 @@
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
 load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
 load("//tools:autotools.bzl", "configure_make", "configure_static_library")
+load("//tools:cmake.bzl", "legacy_cmake")
 
 # Shared Starlark tooling lives here; runtime scripts live in subpackages.
 
@@ -28,6 +29,28 @@ sh_test(
     srcs = ["testdata/run_autotools_smoke.sh"],
     data = [":autotools_smoke_build_hello"],
     env = {"HELLO_BIN": "$(rootpath :autotools_smoke_build_hello)"},
+)
+
+# Regression target for tools/cmake.bzl (ADR 0010/0021): a minimal CMake
+# project built with the pinned cmake, promoted from the fleet-ninja port.
+filegroup(
+    name = "cmake_smoke_tree",
+    srcs = glob(["testdata/cmake_project/**"]),
+)
+
+legacy_cmake(
+    name = "cmake_smoke_build",
+    srcs = [":cmake_smoke_tree"],
+    cmakelists = "testdata/cmake_project/CMakeLists.txt",
+    out_binaries = ["hello"],
+)
+
+sh_test(
+    name = "cmake_smoke_test",
+    size = "small",
+    srcs = ["testdata/run_cmake_smoke.sh"],
+    data = [":cmake_smoke_build_hello"],
+    env = {"HELLO_BIN": "$(rootpath :cmake_smoke_build_hello)"},
 )
 
 filegroup(
