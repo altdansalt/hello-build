@@ -110,3 +110,5 @@ plus tooling (ADR 0019). Each links its own public test invocation:
 | [fleet-gnu-findutils](https://github.com/altdansalt/fleet-gnu-findutils) | GNU findutils 4.10.0 | autotools/C, 3 binaries | [6/6 tests](https://app.buildbuddy.io/invocation/38cc8cab-8fe5-44c3-8c57-02ac1c5e4d99) |
 | [fleet-gnu-m4](https://github.com/altdansalt/fleet-gnu-m4) | GNU m4 1.4.20 | autotools/C, 242 example checks | [6/6 tests](https://app.buildbuddy.io/invocation/79751831-5d86-449f-b3f3-b36eaca0afdc) |
 | [fleet-gnu-patch](https://github.com/altdansalt/fleet-gnu-patch) | GNU patch 2.8 | autotools/C, XFAIL-aware driver | [6/6 tests](https://app.buildbuddy.io/invocation/ae3e2037-fe12-4fd9-a75e-c9443532d6f2) |
+| [fleet-lz4](https://github.com/altdansalt/fleet-lz4) | lz4 1.10.0 | plain make/C | [6/6 tests](https://app.buildbuddy.io/invocation/c127ebd0-f9dd-4e93-9105-9db5bf0f4835) |
+| [fleet-gnu-gzip](https://github.com/altdansalt/fleet-gnu-gzip) | GNU gzip 1.14 | autotools/C | [6/6 tests](https://app.buildbuddy.io/invocation/802e8ebc-f281-4f3e-9d21-54988b72cb4e) |

@@ -53,33 +53,42 @@ four above.
   gets shown is the port's evidence: the green run, the commits, the run
   report.
 
-## Choosing the next repo
+## Choosing the next repo (ADR 0020)
 
-Every port must earn its place in exactly one of two ways:
+**Learning per run is the objective function**, and the **interesting
+list is the target population** — the owner's list, drawn from the
+top-100 repos by pull requests, issues, and size (popularity ×
+non-triviality), is what the build compiler is for. Three run types, in
+descending learning value once a path is paved:
 
-1. **A new generic capability** — a build system or build feature the
-   toolkit can't handle yet (configure steps, C dependencies built from
-   pinned source, code generators, a new language toolchain). The deliverable
-   is the `tools/` wrapper and ADR as much as the port itself.
-2. **A reusability proof** — re-running an *existing* path on a foreign
-   repo to show the tooling generalizes (e.g. a second Cargo port after
-   rmux). Worth doing **once per build system**; a third repo down a paved
-   path proves nothing new.
+1. **Capability** — proves a new wrapper/ADR/check (configure steps,
+   code generators, a new language toolchain, cmake, pnpm graphs). The
+   deliverable is the tooling as much as the port. Justify by which
+   interesting repos it unblocks.
+2. **Expedition** — locates a limit precisely. Sent at or past the
+   frontier; the deliverable is the run report, not a green port. A
+   rejected port that names the wall and the unlock is a success. State
+   up front: the limit probed, abort criteria, the unlock to name.
+3. **Paved validation** — fleet filler, capped by the stopping rule:
+   after ~3 consecutive clean reviews on a path, that path is validated
+   and further ports of its class are rows, not learning.
 
-How to calibrate difficulty — and this is the part to get right:
+**Whale protocol: bite, don't swallow.** Big interesting repos are
+ladders, one session per rung, each leaving a run report:
+probe → capability work the probe named → slice port (the shelley
+pattern) → expand the slice. Never the full port as step one; never a
+vacuous rung (the contract test rejects the known disguise).
 
-- **Be ambitious in capability, conservative in size.** Pick a repo that is
-  hard along *one* new axis and familiar along every other. The failure
-  mode to avoid is not "too hard" — the playbook lands a working state at
-  every step, the contract tests catch dishonest shortcuts, and an
-  abandoned port costs nothing but a branch. The failure mode to avoid is
-  **too easy**: a port that needs no new wrapper, no new ADR, and no
-  playbook edit teaches the toolkit nothing.
-- If two candidates exercise the same capability, take the smaller one.
-- **Check the upstream test suite during scouting (step 0.5), before
-  committing.** A repo with a thin or absent suite makes weak parity
-  evidence no matter how clean the build port is; prefer the candidate
-  whose suite gives the oracle teeth.
+**Failure is output.** docs/ports/ records every run including
+rejections; the fleet index lists only green ports. The gap between the
+two is the map of the frontier.
+
+Still in force:
+
+- **Check the upstream test suite during scouting, before committing.**
+  A thin suite makes weak parity evidence; prefer the candidate whose
+  suite gives the oracle teeth.
+- An abandoned port costs nothing; a dishonest one costs everything.
 
 **No-op rule:** a repo where upstream already maintains Bazel as a
 first-class build (BUILD files at the root, Bazel in their CI — grpc,
@@ -92,8 +101,26 @@ accident.)
 
 ## Candidate repos
 
-Done: redis (make/C), rmux (cargo), the_silver_searcher (autotools + C
-deps from source). Next up, in rough order of learning per effort:
+Done as capability ports: redis (make/C), rmux (cargo),
+the_silver_searcher (autotools + C deps), shelley slice (Go). Fleet
+ports: see the root README index. The ladder over the interesting list
+(ADR 0020), as of 2026-06-11:
+
+- **ripgrep** — fleet, overdue (cargo paved 3×); the one owner-list repo
+  that is immediately portable.
+- **tmux** — expedition-lite: the terminfo/host-data limit, on paved
+  autotools.
+- **ninja** — capability: cmake (legacy side wrapper + native C++ build);
+  unblocks the neovim/llvm/ClickHouse tier.
+- **cpython** — expedition: scale + regrtest-as-oracle; expect the probe
+  to be rejected and to name the unlocks.
+- **neovim** — expedition after ninja's cmake wrapper exists (owner:
+  likely more achievable than it looks).
+- **excalidraw/react/opencode tier** — expedition: the pnpm graph wall
+  ADR 0017 already hit once; the probe's job is to name the unlock
+  precisely.
+
+Older notes (still valid where not superseded):
 
 - **shelley or another small Go repo** — new capability: rules_go +
   Gazelle, go.mod pinning, `go test` on both sides. The gentlest
