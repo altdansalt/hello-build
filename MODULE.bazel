@@ -7,7 +7,7 @@ access (see docs/decisions/0006-hermetic-actions-pinned-fetches.md).
 
 module(
     name = "hello_build",
-    version = "0.2.2",
+    version = "0.2.3",
 )
 
 bazel_dep(name = "rules_cc", version = "0.2.17")
@@ -1131,7 +1131,7 @@ crate.annotation(
     additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",
     crate = "utf8parse",
     repositories = ["rmux_crates"],
-    version = "0.2.2",
+    version = "0.2.3",
 )
 crate.annotation(
     additive_build_file_content = """exports_files(["Cargo.toml"]); filegroup(name = "vendor_tree", srcs = glob(["**"]), visibility = ["//visibility:public"])""",

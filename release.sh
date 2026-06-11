@@ -78,6 +78,9 @@ if ! (cd "$check" && bazel query '@hello_build//tools:all' >/dev/null 2>"$check/
   git push -q origin ":refs/tags/$tag"
   git tag -d "$tag"
   echo "rolled back tag, GitHub release, and registry entry" >&2
+  echo "do NOT retry with the same version: GitHub's CDN can serve the" >&2
+  echo "deleted asset at the recreated URL (observed with v0.2.2)." >&2
+  echo "Bump to a fresh version and re-release." >&2
   exit 1
 fi
 

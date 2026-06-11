@@ -57,7 +57,7 @@ common --registry=https://raw.githubusercontent.com/altdansalt/bazel-registry/ma
 common --registry=https://bcr.bazel.build
 ```
 
-then `bazel_dep(name = "hello_build", version = "0.2.2")`.
+then `bazel_dep(name = "hello_build", version = "0.2.3")`.
 
 ## Quick start
 
