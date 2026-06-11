@@ -19,7 +19,9 @@ repo_root=$(git -C "$(dirname "$0")" rev-parse --show-toplevel)
 cd "$repo_root"
 
 [ -z "$(git status --porcelain)" ] || { echo "working tree not clean" >&2; exit 1; }
-grep -Eq "^    version = \"$version\",$" MODULE.bazel || {
+# Check the module() block specifically — MODULE.bazel is full of crate
+# version lines an unanchored grep can match (the v0.2.1 incident).
+sed -n '/^module(/,/^)/p' MODULE.bazel | grep -qF "version = \"$version\"" || {
   echo "MODULE.bazel module() version is not $version — bump it first" >&2; exit 1; }
 [ "$(git rev-parse HEAD)" = "$(git ls-remote origin HEAD | cut -f1)" ] || {
   echo "HEAD not pushed to origin" >&2; exit 1; }
@@ -49,7 +51,24 @@ tmp=$(mktemp)
 jq --arg v "$version" '.versions = ((.versions + [$v]) | unique)' \
   "$mod/metadata.json" > "$tmp" && mv "$tmp" "$mod/metadata.json"
 
+# The release tests its claim (ADR 0010) before the registry push: a scratch
+# workspace must resolve this exact version from the local registry checkout.
+check=$(mktemp -d)
+cp .bazelversion "$check/"
+cat > "$check/MODULE.bazel" <<EOF
+module(name = "release_check")
+bazel_dep(name = "hello_build", version = "$version")
+EOF
+touch "$check/BUILD.bazel"
+(cd "$check" && bazel mod deps --registry="file://$reg" \
+  --registry=https://bcr.bazel.build >/dev/null 2>"$check/err") || {
+  echo "release self-check FAILED: $version does not resolve from the registry" >&2
+  cat "$check/err" >&2
+  git -C "$reg" checkout -q -- . && git -C "$reg" clean -qfd
+  exit 1
+}
+
 git -C "$reg" add -A
 git -C "$reg" commit -q -m "hello_build $version"
 git -C "$reg" push -q
-echo "released hello_build $version ($tag, integrity $integrity)"
+echo "released hello_build $version ($tag, integrity $integrity, resolution-checked)"

@@ -7,7 +7,7 @@ access (see docs/decisions/0006-hermetic-actions-pinned-fetches.md).
 
 module(
     name = "hello_build",
-    version = "0.2.0",
+    version = "0.2.2",
 )
 
 bazel_dep(name = "rules_cc", version = "0.2.17")
