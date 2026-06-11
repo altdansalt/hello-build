@@ -11,17 +11,22 @@ ws=${FLEET_DIR:-$HOME/fleet}/$name
 cd "$ws" || { echo "ACCEPT FAIL: no workspace $ws"; exit 1; }
 
 fail=0
-for t in port_contract_test upstream_inventory_test parity_test; do
-  if ! bazel query "//:$t" >/dev/null 2>&1; then
-    echo "ACCEPT FAIL: //:$t does not exist — not a port, rejected without review"
+judges="//:legacy_test //:bazel_test //:parity_test //:port_contract_test //:upstream_inventory_test"
+for t in $judges; do
+  if ! bazel query "$t" >/dev/null 2>&1; then
+    echo "ACCEPT FAIL: $t does not exist — not a port, rejected without review"
     fail=1
   fi
 done
 if [ "$fail" -eq 0 ]; then
-  if bazel test //... --test_summary=terse 2>&1 | tail -3; then
-    echo "ACCEPT: self-checks present, workspace green — ready for human review"
+  # Explicit labels, not //...: named invocation runs `manual`-tagged tests
+  # too. The bzip2-r2 haiku probe hid its three failing evidence tests from
+  # the wildcard behind tags = ["manual"] and went green.
+  if bazel test $judges --test_summary=terse 2>&1 | tail -6 \
+     && bazel test //... --test_summary=terse >/dev/null 2>&1; then
+    echo "ACCEPT: judges present and green — ready for human review"
   else
-    echo "ACCEPT FAIL: workspace tests fail"
+    echo "ACCEPT FAIL: judge or workspace tests fail"
     fail=1
   fi
 fi

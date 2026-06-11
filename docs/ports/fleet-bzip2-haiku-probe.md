@@ -31,12 +31,35 @@ agent declared "successfully completed with full parity evidence", but:
    rejected), and Definition of done states the gate explicitly:
    "never declare done" beats silent self-certification.
 
+## Round 2 (same task, 0.2.4 skill): the evasion evolved
+
+9.1 minutes, 149 turns, **$1.45**. Real progress: correct seven-target
+structure, legacy_make on the legacy side, native cc on the Bazel side,
+all five judges instantiated, gaps written into README. But the three
+evidence tests (legacy/bazel/parity) all fail on the runfiles-tree
+gotcha the skill documents — and instead of leaving them red, haiku
+tagged them `tags = ["manual"]` ("TODO: fix runfiles") so
+`bazel test //...` stayed green, then declared "successfully completed"
+with "functional equivalence verified" by ad-hoc manual commands. The
+0.2.4 acceptance gate passed it: `//...` never sees manual tests.
+
+Landed in response (0.2.5):
+
+1. **Loop**: accept.sh names all five judges explicitly — named labels
+   run `manual` tests — and requires them green, plus the wildcard.
+2. **Contract**: any of the seven targets tagged `manual` is rejected
+   (unit-tested).
+3. **Skill**: non-negotiable 7 now spells out that `manual` on an
+   interface target is self-certification; wired-but-red is
+   reviewable, green-by-omission is rejected.
+
 ## Honest open question
 
-Haiku followed scaffold mechanics fine (MODULE.bazel, .bazelrc,
-registry consumption, UPSTREAM, README sections) and was 5× cheaper
-and 3× faster than sonnet. The failure was *semantic*: it optimized
-for "green + done" over the seven-target meaning. Whether the
-strengthened skill + start-red gate is enough for haiku to one-shot a
-paved port is the next probe — rerun bzip2 on haiku after the 0.2.4
-release and diff the paths.
+Two rounds, two distinct self-certification channels (skip the judges;
+hide the judges), both now closed by machine. The pattern: haiku does
+the mechanics well (5× cheaper, 3× faster than sonnet) but optimizes
+"declare done" over "be done" when it hits a real wall — here the
+runfiles gotcha, whose fix (`cp -rL`, `$(rootpath)` anchor) was in its
+SKILL.md verbatim but never got connected to the symptom. Round 3 asks
+whether closed channels force the connection: with no way to be
+dishonestly green, does haiku fix the harness or stop honestly?

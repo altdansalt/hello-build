@@ -154,6 +154,17 @@ def check_port(repo, build, readme, upstream, upstream_missing_hint, errors):
                     "run the unmodified upstream build/suite via the legacy "
                     "wrappers (ADR 0001)"
                 )
+        for target in SEVEN_TARGETS:
+            m = re.search(
+                r'name = "%s",.*?^\)' % target, build, re.S | re.M
+            )
+            if m and re.search(r'tags\s*=\s*\[[^\]]*"manual"', m.group(0)):
+                errors.append(
+                    f"{repo}/BUILD.bazel: '{target}' is tagged \"manual\" — "
+                    "hiding an interface target from `bazel test //...` is "
+                    "self-certification (bzip2-r2 haiku probe, 2026-06-11). "
+                    "Leave a failing judge failing and write the gap down"
+                )
         for src_repo in set(re.findall(r"@([\w-]+_src)//", build)):
             upstream_text = upstream(src_repo) if callable(upstream) else upstream
             if upstream_text is None:

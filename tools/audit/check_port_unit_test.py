@@ -58,6 +58,15 @@ class CheckPortTest(unittest.TestCase):
         self.assertTrue(any("legacy_build" in e and "cc_binary" in e
                             for e in errs), errs)
 
+    def test_manual_tagged_interface_target_rejected(self):
+        build = build_text("legacy_make", "cc_binary").replace(
+            'parity_test(\n    name = "parity_test",\n)',
+            'parity_test(\n    name = "parity_test",\n'
+            '    tags = ["manual"],\n)')
+        errs = errors_for(build)
+        self.assertTrue(any("manual" in e and "parity_test" in e
+                            for e in errs), errs)
+
     def test_missing_self_checks_rejected(self):
         # A BUILD without upstream_inventory_test (the bzip2 haiku probe
         # also skipped the self-checks entirely).

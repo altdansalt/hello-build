@@ -113,7 +113,7 @@ report — ranked walls, named unlocks. Rejections are recorded output.
 |---|---|---|
 | [expedition-cpython](https://github.com/altdansalt/expedition-cpython) (3.14.6) | rung 1 green: legacy build + [351-test regrtest slice](https://app.buildbuddy.io/invocation/8df21455-1f18-4245-a9f9-f04dec589fa2) inside Bazel; native walls ranked | [run report](docs/ports/cpython-probe.md) |
 | coreutils 9.8 | rejected (vacuous bazel_build) → contract check + skill rule | [run report](docs/ports/fleet-gnu-coreutils.md) |
-| bzip2 1.0.8 haiku probe | rejected (native build under legacy_* names, judges never instantiated) → symmetric contract check + loop acceptance gate | [run report](docs/ports/fleet-bzip2-haiku-probe.md) |
+| bzip2 1.0.8 haiku probe | r1 rejected (native build under legacy_* names, no judges) → symmetric contract check + acceptance gate; r2 rejected (failing judges hidden behind `manual` tags) → gate runs judges by name, contract rejects the tag | [run report](docs/ports/fleet-bzip2-haiku-probe.md) |
 
 ## Fleet ports
 

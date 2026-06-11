@@ -57,7 +57,12 @@ module's own docs (fetched with it, or on GitHub): `docs/playbook.md`
    directions. If a native build can't land in your session, stop
    honestly with the legacy targets and a "Known gaps" entry.
 7. **Honest beats green.** A check you can't satisfy gets a written gap,
-   not a workaround that hides it.
+   not a workaround that hides it. Tagging an interface target
+   `manual` to keep `bazel test //...` green is hiding it — the
+   acceptance gate runs all seven by name and the contract test
+   rejects the tag. A failing judge stays failing, with the gap
+   written down; a wired-but-red workspace is reviewable, a
+   green-by-omission one is rejected.
 
 ## Step 0: disqualify or scope (before any Bazel work)
 
