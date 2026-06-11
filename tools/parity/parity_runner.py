@@ -8,11 +8,33 @@ import os
 import shlex
 import subprocess
 import sys
+import tempfile
 
 
 def normalize(data: bytes, legacy: str, bazel: str) -> str:
     text = data.decode("utf-8", errors="replace")
     return text.replace(legacy, "<BIN>").replace(bazel, "<BIN>")
+
+
+def canonical_binaries(legacy: str, bazel: str) -> tuple[str, str]:
+    """Both sides run under the same argv[0]: the legacy binary's basename.
+
+    Binaries print argv[0] in their messages (bzip2's error banner) and may
+    even switch behavior on it (bunzip2/bzcat). Differing target names would
+    make identical behavior look like a diff — so we equalize the invocation
+    rather than normalize the output. The legacy basename wins because the
+    legacy build is the spec.
+    """
+    base = os.path.basename(legacy)
+    tmp = tempfile.mkdtemp(prefix="parity_argv0.")
+    links = []
+    for side, path in (("legacy", legacy), ("bazel", bazel)):
+        side_dir = os.path.join(tmp, side)
+        os.mkdir(side_dir)
+        link = os.path.join(side_dir, base)
+        os.symlink(os.path.abspath(path), link)
+        links.append(link)
+    return links[0], links[1]
 
 
 def run_case(binary: str, argv: list[str], stdin: str | None, env: dict[str, str]):
@@ -170,12 +192,13 @@ def main() -> int:
         parser.error("provide --cases, --cases-jsonl, or --suite")
 
     state = {"checks": 0, "fails": 0}
+    legacy_bin, bazel_bin = canonical_binaries(args.legacy, args.bazel)
     if args.cases:
-        run_text_cases(args.cases, args.legacy, args.bazel, state)
+        run_text_cases(args.cases, legacy_bin, bazel_bin, state)
     if args.cases_jsonl:
-        run_jsonl_cases(args.cases_jsonl, args.legacy, args.bazel, state)
+        run_jsonl_cases(args.cases_jsonl, legacy_bin, bazel_bin, state)
     if args.suite:
-        run_suite(args.suite, args.suite_bin_env, args.legacy, args.bazel, state)
+        run_suite(args.suite, args.suite_bin_env, legacy_bin, bazel_bin, state)
 
     print(
         f"# parity: {state['checks']} checks, {state['fails']} failures "

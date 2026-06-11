@@ -347,7 +347,7 @@
     "@@rules_nodejs+//nodejs:extensions.bzl%node": {
       "general": {
         "bzlTransitiveDigest": "oZFClfRhTTwsYzpxVPkOpOt/r0+OzEfEV37au0jFZ0s=",
-        "usagesDigest": "w2zMQr0K4/y6cyIOPkvOvz0NCZbI58InVelTjFhbJIY=",
+        "usagesDigest": "o1MrejVW4Sv+NgvGWQzmSK3/pcnxSuvNIprvBo9pdj0=",
         "recordedInputs": [],
         "generatedRepoSpecs": {
           "nodejs_linux_amd64": {
@@ -508,7 +508,7 @@
     "@@rules_rust+//crate_universe:extensions.bzl%crate": {
       "general": {
         "bzlTransitiveDigest": "r2A95SmJhS2rIQw2sdLDi1N35RppjyyJ14+DCSDlDsI=",
-        "usagesDigest": "wrW/ww7QyBVwQAgnj3wJAxnaQfUzWzVb8CuJ3pQ1s78=",
+        "usagesDigest": "H2B2Q/MIqHmyf78uRTqYXncG2pkKoQPp3VoLqI1TqFA=",
         "recordedInputs": [
           "ENV:CARGO_BAZEL_DEBUG \\0",
           "ENV:CARGO_BAZEL_GENERATOR_SHA256 \\0",

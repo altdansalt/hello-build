@@ -57,6 +57,35 @@ class ParityRunnerTest(unittest.TestCase):
         self.assertEqual(code, 0, out)
         self.assertIn("2 checks, 0 failures", out)
 
+    def test_argv0_in_output_is_equalized(self):
+        # Binaries print their own name (bzip2's error banner). Different
+        # target names must not read as a behavior diff: both sides run
+        # under the legacy basename (bzip2-r3 haiku probe, 2026-06-11).
+        legacy = write_script(
+            self.dir, "bzip2", 'echo "$(basename "$0"): boom" >&2; exit 1\n'
+        )
+        bazel = write_script(
+            self.dir, "bazel_build", 'echo "$(basename "$0"): boom" >&2; exit 1\n'
+        )
+        cases = self.cases_file("-d\n")
+        code, out = run_main(
+            ["--legacy", legacy, "--bazel", bazel, "--cases", cases]
+        )
+        self.assertEqual(code, 0, out)
+        self.assertIn("1 checks, 0 failures", out)
+
+    def test_argv0_behavior_switch_uses_legacy_name(self):
+        # Some upstreams switch behavior on argv[0] (bunzip2/bzcat). Both
+        # sides must see the LEGACY name, so behavior matches the spec.
+        body = 'case "$(basename "$0")" in bzcat) echo cat-mode;; *) echo other;; esac\n'
+        legacy = write_script(self.dir, "bzcat", body)
+        bazel = write_script(self.dir, "bazel_binary", body)
+        cases = self.cases_file("x\n")
+        code, out = run_main(
+            ["--legacy", legacy, "--bazel", bazel, "--cases", cases]
+        )
+        self.assertEqual(code, 0, out)
+
     def test_stdout_difference_fails(self):
         other = write_script(self.dir, "other", 'echo "OUT $1"; echo err >&2\n')
         cases = self.cases_file("hello\n")
