@@ -109,7 +109,9 @@ ports: see the root README index. The ladder over the interesting list
 - **ripgrep** — fleet, overdue (cargo paved 3×); the one owner-list repo
   that is immediately portable.
 - **tmux** — expedition-lite: the terminfo/host-data limit, on paved
-  autotools.
+  autotools. (Launched 2026-06-11, interrupted by capacity wind-down —
+  ready-to-relaunch task file in /home/exedev/fleet/tmux, see
+  docs/ports/interrupted-2026-06-11.md.)
 - **ninja** — capability: cmake (legacy side wrapper + native C++ build);
   unblocks the neovim/llvm/ClickHouse tier.
 - **cpython** — rung 1 DONE (2026-06-11, expedition-cpython): legacy
