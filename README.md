@@ -138,3 +138,4 @@ plus tooling (ADR 0019). Each links its own public test invocation:
 | [fleet-gnu-gzip](https://github.com/altdansalt/fleet-gnu-gzip) | GNU gzip 1.14 | autotools/C | [6/6 tests](https://app.buildbuddy.io/invocation/802e8ebc-f281-4f3e-9d21-54988b72cb4e) |
 | [fleet-ninja](https://github.com/altdansalt/fleet-ninja) | ninja 1.13.2 | **cmake** (pinned, ADR 0021), gtest both sides | [6/6 tests](https://app.buildbuddy.io/invocation/05c80034-7ecc-46ee-8ce4-9e245b294075) |
 | [fleet-ripgrep](https://github.com/altdansalt/fleet-ripgrep) | ripgrep 15.1.0 | cargo/Rust workspace, 1165 tests legacy-side | [13/13 tests](https://app.buildbuddy.io/invocation/172b936c-a48a-474c-af4d-05789b6d4c54) |
+| [fleet-zstd](https://github.com/altdansalt/fleet-zstd) | zstd 1.5.7 | plain make/C, datagen both sides, playTests.sh wired | [5/5 tests](https://app.buildbuddy.io/invocation/1df89b38-2586-42dc-a590-2dea10ba108a) |

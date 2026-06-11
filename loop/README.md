@@ -72,6 +72,11 @@ loop/trace.sh <run.jsonl>             # distill a recording (run-port runs it fo
 
 ## Cost discipline
 
+Calibration (fleet-zstd, 2026-06-11, claude-sonnet-4-6): a full
+paved-path port = **19 minutes, $4.57**. At that price the constraint
+on loop cadence is review attention, not tokens — but recalibrate
+whenever the model, the skill, or the port class changes.
+
 - Record `total_cost_usd` and token counts from every run's result
   event in its run report. No unrecorded spend.
 - Default model is sonnet-class; escalate to opus-class only for

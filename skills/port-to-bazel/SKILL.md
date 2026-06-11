@@ -181,6 +181,11 @@ polarity canary. Then produce the shareable evidence link:
 - Sandbox source trees are read-only: the legacy wrappers already copy to
   scratch dirs — use them, don't open-code genrules. Upstream tests that
   write next to themselves need a documented skip, not a looser sandbox.
+- Runfiles are symlinks. Upstream tools that lstat() their inputs
+  (zstd skips symlinked files) or suites that resolve paths via
+  `$(dirname $0)` mis-see them — have the suite wrapper `cp -rL` the
+  tree to a scratch dir and run from the copy (see fleet-zstd's
+  tests/run_upstream_tests.sh).
 - To locate a fetched tree from a test script, pass one
   `$(rootpath @<repo>_src//:some/anchor/file)` as an argument and derive
   the directory from it — don't enumerate runfiles layouts or `find` for
