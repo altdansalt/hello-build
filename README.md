@@ -66,6 +66,9 @@ docs/               vision, goals, principles, decision log, onboarding
                     playbook, per-port run reports (docs/ports/)
 skills/             the porting skill (ADR 0019): the playbook distilled
                     into agent instructions for standalone fleet ports
+loop/               the run loop that improves the product (ADR 0022):
+                    scaffold a port workspace, run a recorded agent on it
+                    via the exe.dev LLM gateway, distill the path it took
 tools/              shared Starlark + scripts (legacy_make, legacy_cargo,
                     parity_test, opt_binary); tools/audit/ holds the
                     repo-wide host-baseline and onboarding-contract tests
