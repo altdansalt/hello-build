@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Scaffold a fleet port workspace under ~/fleet/<name>: PORT_TASK.md plus the
-# porting skill, both pinned to the hello_build commit currently on GitHub.
-# The goal text for PORT_TASK.md is read from stdin:
+# porting skill, both pinned to the latest hello_build release in the static
+# registry (ADR 0023). The goal text for PORT_TASK.md is read from stdin:
 #
 #   loop/new-port.sh zstd <<'EOF'
 #   Port zstd 1.5.7 (https://github.com/facebook/zstd) ...
@@ -12,19 +12,21 @@ name=${1:?usage: new-port.sh <name> < goal.md}
 fleet_dir=${FLEET_DIR:-$HOME/fleet}
 ws=$fleet_dir/$name
 repo_root=$(git -C "$(dirname "$0")" rev-parse --show-toplevel)
-remote=https://github.com/altdansalt/hello-build.git
+registry=https://raw.githubusercontent.com/altdansalt/bazel-registry/main
 
-local_head=$(git -C "$repo_root" rev-parse HEAD)
-remote_head=$(git ls-remote "$remote" HEAD | cut -f1)
-if [ "$local_head" != "$remote_head" ]; then
-  echo "local HEAD $local_head != remote HEAD $remote_head" >&2
-  echo "push (or pull) hello-build first: the run must pin the skill it was given" >&2
-  exit 1
+version=$(curl -fsS "$registry/modules/hello_build/metadata.json" | jq -r '.versions | last')
+[ -n "$version" ] && [ "$version" != null ] || { echo "no released version in registry" >&2; exit 1; }
+git -C "$repo_root" fetch -q --tags origin
+skill=$(git -C "$repo_root" show "v$version:skills/port-to-bazel/SKILL.md") || {
+  echo "tag v$version not found locally even after fetch" >&2; exit 1; }
+if ! git -C "$repo_root" diff --quiet "v$version" HEAD -- skills tools MODULE.bazel; then
+  echo "NOTE: skills/, tools/, or MODULE.bazel changed since v$version —" >&2
+  echo "cut a release first if this run should test those changes (./release.sh)" >&2
 fi
 
 [ -e "$ws" ] && { echo "$ws already exists" >&2; exit 1; }
 mkdir -p "$ws"
-cp "$repo_root/skills/port-to-bazel/SKILL.md" "$ws/SKILL.md"
+printf '%s\n' "$skill" > "$ws/SKILL.md"
 goal=$(cat)
 
 cat > "$ws/PORT_TASK.md" <<EOF
@@ -33,8 +35,8 @@ cat > "$ws/PORT_TASK.md" <<EOF
 Carry out the port described below by following SKILL.md in this
 directory. Work entirely inside this workspace.
 
-Pin hello_build via git_override at commit $remote_head
-(remote $remote).
+Consume hello_build version $version per SKILL.md's MODULE.bazel
+template and registry .bazelrc lines.
 
 ## Goal
 
@@ -53,4 +55,4 @@ $goal
 EOF
 
 git -C "$ws" init -q
-echo "scaffolded $ws (hello_build @ $remote_head)"
+echo "scaffolded $ws (hello_build $version)"

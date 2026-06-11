@@ -30,9 +30,11 @@ loop/trace.sh <run.jsonl>             # distill a recording (run-port runs it fo
 ```
 
 - `new-port.sh` writes `PORT_TASK.md` and copies `SKILL.md` into the
-  workspace, both pinned to the hello_build commit on GitHub (`git
-  ls-remote` HEAD — it must match your local HEAD, so push skill edits
-  before scaffolding; the script refuses otherwise).
+  workspace, both pinned to the **latest hello_build release** in the
+  static registry (ADR 0023) — a run tests exactly what consumers get.
+  It warns when skills/, tools/, or MODULE.bazel moved since that
+  release: cut one first (`./release.sh <version>`) if the run should
+  test those changes.
 - `run-port.sh` runs `claude -p --dangerously-skip-permissions
   --output-format stream-json` in the workspace via the gateway.
   Default model: `claude-sonnet-4-6`. Optional `TIMEOUT=2h` wall-clock
@@ -64,8 +66,9 @@ loop/trace.sh <run.jsonl>             # distill a recording (run-port runs it fo
 4. **Harvest**: publish the workspace to `altdansalt/fleet-<name>`,
    add the run report to `docs/ports/`, land skill/tool edits and ADRs
    motivated by the trace, update the README fleet table.
-5. **Push before the next scaffold** so the next run pins the improved
-   skill.
+5. **Release before the next scaffold** (`./release.sh`) when the
+   iteration touched skills/, tools/, or MODULE.bazel, so the next run
+   pins the improved product.
 
 ## Cost discipline
 

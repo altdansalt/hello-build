@@ -90,12 +90,7 @@ MODULE.bazel template:
 
 ```python
 module(name = "<port>", version = "0.1.0")
-bazel_dep(name = "hello_build", version = "0.1.0")
-git_override(
-    module_name = "hello_build",
-    remote = "https://github.com/altdansalt/hello-build.git",
-    commit = "<pinned commit>",
-)
+bazel_dep(name = "hello_build", version = "<version from your task>")
 http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 http_archive(
     name = "<port>_src",
@@ -105,6 +100,18 @@ http_archive(
     url = "<pinned release tarball>",
 )
 ```
+
+hello_build resolves from its static registry (ADR 0023) — these two
+lines go at the top of `.bazelrc`, before the flags copied from
+consumers/hello-standalone:
+
+```
+common --registry=https://raw.githubusercontent.com/altdansalt/bazel-registry/main
+common --registry=https://bcr.bazel.build
+```
+
+(Dev-mode only, when told to test unreleased tooling: a `git_override`
+on hello_build pinned to a commit replaces the version resolution.)
 
 Pin a release tag, never a moving branch. Prefer the official release
 tarball (it ships generated `configure`/headers a git archive may lack).
